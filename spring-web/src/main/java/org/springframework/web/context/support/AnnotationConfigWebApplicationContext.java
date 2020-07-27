@@ -80,8 +80,8 @@ import org.springframework.web.context.ContextLoader;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.0
  * @see org.springframework.context.annotation.AnnotationConfigApplicationContext
+ * @since 3.0
  */
 public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWebApplicationContext
 		implements AnnotationConfigRegistry {
@@ -101,6 +101,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 * Set a custom {@link BeanNameGenerator} for use with {@link AnnotatedBeanDefinitionReader}
 	 * and/or {@link ClassPathBeanDefinitionScanner}.
 	 * <p>Default is {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
+	 *
 	 * @see AnnotatedBeanDefinitionReader#setBeanNameGenerator
 	 * @see ClassPathBeanDefinitionScanner#setBeanNameGenerator
 	 */
@@ -121,6 +122,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 * Set a custom {@link ScopeMetadataResolver} for use with {@link AnnotatedBeanDefinitionReader}
 	 * and/or {@link ClassPathBeanDefinitionScanner}.
 	 * <p>Default is an {@link org.springframework.context.annotation.AnnotationScopeMetadataResolver}.
+	 *
 	 * @see AnnotatedBeanDefinitionReader#setScopeMetadataResolver
 	 * @see ClassPathBeanDefinitionScanner#setScopeMetadataResolver
 	 */
@@ -142,8 +144,9 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 * Register one or more component classes to be processed.
 	 * <p>Note that {@link #refresh()} must be called in order for the context
 	 * to fully process the new classes.
+	 *
 	 * @param componentClasses one or more component classes,
-	 * e.g. {@link org.springframework.context.annotation.Configuration @Configuration} classes
+	 *                         e.g. {@link org.springframework.context.annotation.Configuration @Configuration} classes
 	 * @see #scan(String...)
 	 * @see #loadBeanDefinitions(DefaultListableBeanFactory)
 	 * @see #setConfigLocation(String)
@@ -159,6 +162,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 * Perform a scan within the specified base packages.
 	 * <p>Note that {@link #refresh()} must be called in order for the context
 	 * to fully process the new classes.
+	 *
 	 * @param basePackages the packages to check for component classes
 	 * @see #loadBeanDefinitions(DefaultListableBeanFactory)
 	 * @see #register(Class...)
@@ -173,9 +177,17 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 
 
 	/**
+	 * 译: 为任何被{@link #register(Class...)}指定的类和{@link #scan(String...)}指定的的路径注册一个
+	 * {@link org.springframework.beans.factory.config.BeanDefinition}
 	 * Register a {@link org.springframework.beans.factory.config.BeanDefinition} for
 	 * any classes specified by {@link #register(Class...)} and scan any packages
 	 * specified by {@link #scan(String...)}.
+	 * <p>
+	 * 译: 针对{@link #setConfigLocation(String)}和{@link #setConfigLocations(String[])}指定的任何值，尝试将每个位置加载为一个类，
+	 * 若类被加载成功，则注册一个{@code BeanDefinition}，若加载失败则抛出{@code ClassNotFoundException}；若该值是一个package，则尝试去扫描以查找组件类。
+	 * 启用默认的注解配置后处理器集合，例如{@code @Autowired}, {@code @Required}及其关联注解可以被使用。
+	 * 配置类bean名称被注册时使用生成的bean名称，除非{@code value}属性提供了bean名称。
+	 *
 	 * <p>For any values specified by {@link #setConfigLocation(String)} or
 	 * {@link #setConfigLocations(String[])}, attempt first to load each location as a
 	 * class, registering a {@code BeanDefinition} if class loading is successful,
@@ -186,6 +198,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 * <p>Configuration class bean definitions are registered with generated bean
 	 * definition names unless the {@code value} attribute is provided to the stereotype
 	 * annotation.
+	 *
 	 * @param beanFactory the bean factory to load bean definitions into
 	 * @see #register(Class...)
 	 * @see #scan(String...)
@@ -196,6 +209,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
+		// 用于以编程的方式注册bean类@Bean
 		AnnotatedBeanDefinitionReader reader = getAnnotatedBeanDefinitionReader(beanFactory);
 		ClassPathBeanDefinitionScanner scanner = getClassPathBeanDefinitionScanner(beanFactory);
 
@@ -237,15 +251,15 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 						logger.trace("Registering [" + configLocation + "]");
 					}
 					reader.register(clazz);
-				}
-				catch (ClassNotFoundException ex) {
+				} catch (ClassNotFoundException ex) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Could not load class for config location [" + configLocation +
 								"] - trying package scan. " + ex);
 					}
 					int count = scanner.scan(configLocation);
 					if (count == 0 && logger.isDebugEnabled()) {
-						logger.debug("No component classes found for specified class/package [" + configLocation + "]");
+						logger.debug("No component classes found for specified class/package [" + configLocation +
+								"]");
 					}
 				}
 			}
@@ -254,28 +268,32 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 
 
 	/**
+	 * 译: 为bean factory创建一个{@link AnnotatedBeanDefinitionReader}。这应该使用{@code Environment}预配置。
 	 * Build an {@link AnnotatedBeanDefinitionReader} for the given bean factory.
 	 * <p>This should be pre-configured with the {@code Environment} (if desired)
 	 * but not with a {@code BeanNameGenerator} or {@code ScopeMetadataResolver} yet.
+	 *
 	 * @param beanFactory the bean factory to load bean definitions into
-	 * @since 4.1.9
 	 * @see #getEnvironment()
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()
+	 * @since 4.1.9
 	 */
 	protected AnnotatedBeanDefinitionReader getAnnotatedBeanDefinitionReader(DefaultListableBeanFactory beanFactory) {
 		return new AnnotatedBeanDefinitionReader(beanFactory, getEnvironment());
 	}
 
 	/**
+	 * 译: 为bean factory创建一个{@link ClassPathBeanDefinitionScanner}。这应该使用{@code Environment}预配置。
 	 * Build a {@link ClassPathBeanDefinitionScanner} for the given bean factory.
 	 * <p>This should be pre-configured with the {@code Environment} (if desired)
 	 * but not with a {@code BeanNameGenerator} or {@code ScopeMetadataResolver} yet.
+	 *
 	 * @param beanFactory the bean factory to load bean definitions into
-	 * @since 4.1.9
 	 * @see #getEnvironment()
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()
+	 * @since 4.1.9
 	 */
 	protected ClassPathBeanDefinitionScanner getClassPathBeanDefinitionScanner(DefaultListableBeanFactory beanFactory) {
 		return new ClassPathBeanDefinitionScanner(beanFactory, true, getEnvironment());

@@ -39,6 +39,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 译: 一个实用工具类，被用于注册通用的BeanPostProcessor和BeanFactoryPostProcessor，
+ * 用于基于注解的配置，还注册了通用的AutowireCandidateResolver
+ * <p>
  * Utility class that allows for convenient registration of common
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} and
  * {@link org.springframework.beans.factory.config.BeanFactoryPostProcessor}
@@ -50,40 +53,49 @@ import org.springframework.util.ClassUtils;
  * @author Chris Beams
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 2.5
  * @see ContextAnnotationAutowireCandidateResolver
  * @see ConfigurationClassPostProcessor
  * @see CommonAnnotationBeanPostProcessor
  * @see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
  * @see org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor
+ * @since 2.5
  */
 public abstract class AnnotationConfigUtils {
 
 	/**
+	 * 内部管理Configuration注解处理器名称
 	 * The bean name of the internally managed Configuration annotation processor.
 	 */
 	public static final String CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME =
 			"org.springframework.context.annotation.internalConfigurationAnnotationProcessor";
 
 	/**
+	 * 内部管理的BeanNameGenerator的名字，用于处理{@link Configuration}类时使用
+	 * 在bootstrap过程中由{@link AnnotationConfigApplicationContext} 和 {@code AnnotationConfigWebApplicationContext}设置，
+	 * 目的是使任何自定义名称生成策略可用于基础{@link ConfigurationClassPostProcessor}。
+	 * <p>
 	 * The bean name of the internally managed BeanNameGenerator for use when processing
 	 * {@link Configuration} classes. Set by {@link AnnotationConfigApplicationContext}
 	 * and {@code AnnotationConfigWebApplicationContext} during bootstrap in order to make
 	 * any custom name generation strategy available to the underlying
 	 * {@link ConfigurationClassPostProcessor}.
+	 *
 	 * @since 3.1.1
 	 */
 	public static final String CONFIGURATION_BEAN_NAME_GENERATOR =
 			"org.springframework.context.annotation.internalConfigurationBeanNameGenerator";
 
 	/**
+	 * 译: 内部管理Autowired注解处理器的名称
 	 * The bean name of the internally managed Autowired annotation processor.
 	 */
 	public static final String AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME =
 			"org.springframework.context.annotation.internalAutowiredAnnotationProcessor";
 
 	/**
+	 * 内部管理Required注解处理器名称
 	 * The bean name of the internally managed Required annotation processor.
+	 *
 	 * @deprecated as of 5.1, since no Required processor is registered by default anymore
 	 */
 	@Deprecated
@@ -106,12 +118,14 @@ public abstract class AnnotationConfigUtils {
 			"org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor";
 
 	/**
+	 * 内部管理EventListener注解处理器名称
 	 * The bean name of the internally managed @EventListener annotation processor.
 	 */
 	public static final String EVENT_LISTENER_PROCESSOR_BEAN_NAME =
 			"org.springframework.context.event.internalEventListenerProcessor";
 
 	/**
+	 * 内部EventListenerFactory的名称
 	 * The bean name of the internally managed EventListenerFactory.
 	 */
 	public static final String EVENT_LISTENER_FACTORY_BEAN_NAME =
@@ -130,7 +144,9 @@ public abstract class AnnotationConfigUtils {
 
 
 	/**
+	 * 译：注册所有给定的注解post处理器
 	 * Register all relevant annotation post processors in the given registry.
+	 *
 	 * @param registry the registry to operate on
 	 */
 	public static void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
@@ -139,9 +155,10 @@ public abstract class AnnotationConfigUtils {
 
 	/**
 	 * Register all relevant annotation post processors in the given registry.
+	 *
 	 * @param registry the registry to operate on
-	 * @param source the configuration source element (already extracted)
-	 * that this registration was triggered from. May be {@code null}.
+	 * @param source   the configuration source element (already extracted)
+	 *                 that this registration was triggered from. May be {@code null}.
 	 * @return a Set of BeanDefinitionHolders, containing all bean definitions
 	 * that have actually been registered by this call
 	 */
@@ -160,12 +177,14 @@ public abstract class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
+		// 若不包含CONFIGURATION注解处理器
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
+		// 若不包含AUTOWIRED注解处理器
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
 			def.setSource(source);
@@ -185,8 +204,7 @@ public abstract class AnnotationConfigUtils {
 			try {
 				def.setBeanClass(ClassUtils.forName(PERSISTENCE_ANNOTATION_PROCESSOR_CLASS_NAME,
 						AnnotationConfigUtils.class.getClassLoader()));
-			}
-			catch (ClassNotFoundException ex) {
+			} catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
 						"Cannot load optional framework class: " + PERSISTENCE_ANNOTATION_PROCESSOR_CLASS_NAME, ex);
 			}
@@ -221,11 +239,9 @@ public abstract class AnnotationConfigUtils {
 	private static DefaultListableBeanFactory unwrapDefaultListableBeanFactory(BeanDefinitionRegistry registry) {
 		if (registry instanceof DefaultListableBeanFactory) {
 			return (DefaultListableBeanFactory) registry;
-		}
-		else if (registry instanceof GenericApplicationContext) {
+		} else if (registry instanceof GenericApplicationContext) {
 			return ((GenericApplicationContext) registry).getDefaultListableBeanFactory();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -238,8 +254,7 @@ public abstract class AnnotationConfigUtils {
 		AnnotationAttributes lazy = attributesFor(metadata, Lazy.class);
 		if (lazy != null) {
 			abd.setLazyInit(lazy.getBoolean("value"));
-		}
-		else if (abd.getMetadata() != metadata) {
+		} else if (abd.getMetadata() != metadata) {
 			lazy = attributesFor(abd.getMetadata(), Lazy.class);
 			if (lazy != null) {
 				abd.setLazyInit(lazy.getBoolean("value"));
@@ -286,7 +301,7 @@ public abstract class AnnotationConfigUtils {
 	}
 
 	static Set<AnnotationAttributes> attributesForRepeatable(AnnotationMetadata metadata,
-			Class<?> containerClass, Class<?> annotationClass) {
+															 Class<?> containerClass, Class<?> annotationClass) {
 
 		return attributesForRepeatable(metadata, containerClass.getName(), annotationClass.getName());
 	}

@@ -578,6 +578,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 译: 准备context以刷新,设置启动时间和激活标记以及所有属性源的初始化
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
 	 */
@@ -597,6 +598,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment.
+		// 初始化context上下文环境中所有占位符属性源，这里由具体是实现类实现
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable:
