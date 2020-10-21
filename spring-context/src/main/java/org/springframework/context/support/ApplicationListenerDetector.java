@@ -58,7 +58,10 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 
 
 	@Override
-	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType,
+												String beanName) {
+		// 若Bean是ApplicationListener则将其放入到singletonNames内
+		// 在postProcessAfterInitialization方法中，将ApplicationListener子类放入到ApplicationListeners集合中
 		if (ApplicationListener.class.isAssignableFrom(beanType)) {
 			this.singletonNames.put(beanName, beanDefinition.isSingleton());
 		}
@@ -73,12 +76,12 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
 		if (bean instanceof ApplicationListener) {
 			// potentially not detected as a listener by getBeanNamesForType retrieval
+			// getBeanNamesForType可能不会将其判断为监听器,所以此处判断是否是ApplicationListener若是则将其加入到ApplicationListeners中
 			Boolean flag = this.singletonNames.get(beanName);
 			if (Boolean.TRUE.equals(flag)) {
 				// singleton bean (top-level or inner): register on the fly
 				this.applicationContext.addApplicationListener((ApplicationListener<?>) bean);
-			}
-			else if (Boolean.FALSE.equals(flag)) {
+			} else if (Boolean.FALSE.equals(flag)) {
 				if (logger.isWarnEnabled() && !this.applicationContext.containsBean(beanName)) {
 					// inner bean with other scope - can't reliably process events
 					logger.warn("Inner bean '" + beanName + "' implements ApplicationListener interface " +
@@ -99,8 +102,7 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 				ApplicationEventMulticaster multicaster = this.applicationContext.getApplicationEventMulticaster();
 				multicaster.removeApplicationListener((ApplicationListener<?>) bean);
 				multicaster.removeApplicationListenerBean(beanName);
-			}
-			catch (IllegalStateException ex) {
+			} catch (IllegalStateException ex) {
 				// ApplicationEventMulticaster not initialized yet - no need to remove a listener
 			}
 		}

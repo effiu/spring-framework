@@ -155,6 +155,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		Assert.notNull(singletonFactory, "Singleton factory must not be null");
 		synchronized (this.singletonObjects) {
 			if (!this.singletonObjects.containsKey(beanName)) {
+				// 将singletonFactory放入到二级缓存工厂中
 				this.singletonFactories.put(beanName, singletonFactory);
 				this.earlySingletonObjects.remove(beanName);
 				this.registeredSingletons.add(beanName);
@@ -178,15 +179,21 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+		// 单例池(一级缓存)，存放的是实例化好的bean
 		Object singletonObject = this.singletonObjects.get(beanName);
+		// 第一次必然是空，且singletonsCurrentlyInCreation不包含该beanName，一般情况下，非单例bean永远不会执行该if条件
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
+				// 三级级缓存，存放临时对象，第一次必然为空
 				singletonObject = this.earlySingletonObjects.get(beanName);
 				if (singletonObject == null && allowEarlyReference) {
+					// 二级缓存、存放的是工厂(用于代理)
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
 						singletonObject = singletonFactory.getObject();
+						// 将通过工厂创建的代理类，放入到三级缓存中
 						this.earlySingletonObjects.put(beanName, singletonObject);
+						// 节省内存，没必要重新调用singletonFactory.getObject(),所以要remove
 						this.singletonFactories.remove(beanName);
 					}
 				}
@@ -216,6 +223,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
+				// 将当前bean放入到正在创建的集合中去
 				beforeSingletonCreation(beanName);
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
@@ -223,6 +231,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					// 实际创建Bean
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}
