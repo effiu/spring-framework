@@ -453,7 +453,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) {
-			// 若该bean是ImportAware，则将@Import注解的类
+			// 若该bean是ImportAware, 则将@Import注解的类
 			// (支持@Configuration、@Component,实现ImportSelector、ImportBeanDefinitionRegistrar接口的实现类)
 			// 通过ImportAware的setImportMetadata将该注解注入到@Import指定类中
 			if (bean instanceof ImportAware) {

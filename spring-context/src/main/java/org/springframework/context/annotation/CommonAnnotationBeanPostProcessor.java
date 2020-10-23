@@ -157,7 +157,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	static {
 		webServiceRefClass = loadAnnotationType("javax.xml.ws.WebServiceRef");
 		ejbClass = loadAnnotationType("javax.ejb.EJB");
-
+		// 配置支持的注解
 		resourceAnnotationTypes.add(Resource.class);
 		if (webServiceRefClass != null) {
 			resourceAnnotationTypes.add(webServiceRefClass);
