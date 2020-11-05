@@ -19,6 +19,10 @@ package org.springframework.beans.factory.config;
 import org.springframework.beans.BeansException;
 
 /**
+ * BeanFactoryPostProcessor与工厂挂钩，允许自定义修改应用程序上下文的Bean定义。
+ * BeanFactoryPostProcessor可以与Bean定义交互并对其修改，但是不与Bean实例交互。
+ * ApplicationContext会自动检测BeanFactoryPostProcessor
+ *
  * Factory hook that allows for custom modification of an application context's
  * bean definitions, adapting the bean property values of the context's underlying
  * bean factory.

@@ -36,6 +36,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 完全实现了AutowireCandidateResolver策略，为占位符注解以及由@Lazy注解驱动的延迟解析提供支持
  * Complete implementation of the
  * {@link org.springframework.beans.factory.support.AutowireCandidateResolver} strategy
  * interface, providing support for qualifier annotations as well as for lazy resolution

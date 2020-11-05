@@ -515,7 +515,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// 第一次调用后置处理器，代理相关
+			// 第一次调用后置处理器，AOP代理相关
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -581,8 +581,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.postProcessed) {
 				try {
 					// 第三次调用后置处理器，通过后置处理器合并BeanDefinition,拿到所有需要注入的属性
-					// ApplicationListenerDetector: 将属于ApplicationListener的Bean放入到ApplicationContext
-					// 上下文的applicationListener集合中
+					// ApplicationListenerDetector: 将属于ApplicationListener的Bean放入到ApplicationContext上下文的applicationListener集合中
 					// CommonAnnotationBeanPostProcessor: 将@Resource、@webServiceRef、@EJB修饰的属性放入到RootBeanDefinition中
 					// AutowiredAnnotationBeanPostProcessor: 将@Autowired、@Value、JSR-330相关注解放入到RootBeanDefinition中
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
@@ -606,7 +605,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 						"' to allow for resolving potential circular references");
 			}
 			// 当支持循环依赖时，就会提前暴露自己(为了其他对象可以注入自己)，第四次调用后置处理器
-			// Spring Boot中没有处理任何事情
+			// AspectJAwareAdvisorAutoProxyCreator BeanPostProcessor会将其包装为一个代理类
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -626,10 +625,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+		// 若支持循环依赖
 		if (earlySingletonExposure) {
+			// 以AB互相依赖为例
+			// 假设先加载Bean a,在Bean a的populateBean过程中发现需要Bean b,此时Bean a的工厂对象已经放入到singletonObjects(二级缓存中),然后实例化Bean b,
+			// 执行到Bean b的populateBean时要注入Bean a,之后就会执行getSingleton(a, true)时就可以获取到Bean a的工厂对象,就可以取得Bean a的代理对象,
+			// 将Bean a注入到Bean b中,然后完成Bean b的注入和初始化
+			// 返回的是当前bean提前暴露的对象,为代理后的对象, allowEarlyReference=false,禁用singletonObjects缓存
 			Object earlySingletonReference = getSingleton(beanName, false);
 			if (earlySingletonReference != null) {
 				if (exposedObject == bean) {
+					// 将Bean替换成代理后的Bean
 					exposedObject = earlySingletonReference;
 				} else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
 					String[] dependentBeans = getDependentBeans(beanName);
@@ -1228,8 +1234,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Candidate constructors for autowiring?
-		// 调用后置处理器推断构造方法
-		//TODO 很难,(构造方法注入？)
+		// 第二次调用后置处理器调用后置处理器推断构造方法,构造方法注入
+		// AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors方法推断构造方法
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
@@ -1419,9 +1425,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
 		// state of the bean before properties are set. This can be used, for example,
 		// to support styles of field injection.
-		// 任何实现postProcessAfterInstantiation的BeanPostProcessor都可以修改postProcessAfterInstantiation的返回值,例如:动态注入
-		// 第五次调用后置处理器，判断是否需要属性注入,CommonAnnotationBeanPostProcessor、AutowiredAnnotationBeanPostProcessor
-		// 、ImportAwareBeanPostProcessor都默认为true
+		// 任何实现postProcessAfterInstantiation的BeanPostProcessor都可以修改postProcessAfterInstantiation的返回值
+		// 第五次调用后置处理器，判断是否需要属性注入,CommonAnnotationBeanPostProcessor、AutowiredAnnotationBeanPostProcessor、ImportAwareBeanPostProcessor都默认为true
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1854,7 +1859,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
 			// 第8次调用后置处理器
-			// 1.ApplicationContextAwareProcessor、ImportAwareBeanPostProcessor、: 没有做任何事情
+			// 1.ApplicationContextAwareProcessor、ImportAwareBeanPostProcessor: 没有做任何事情
 			// 2.BeanPostProcessorChecker: 一些日志
 			// 3.CommonAnnotationBeanPostProcessor、AutowiredAnnotationBeanPostProcessor:没有做任何事情
 			// 4.ApplicationListenerDetector: 将符合条件的Bean放入到ApplicationContext.applicationListeners中

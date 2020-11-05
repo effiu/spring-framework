@@ -122,6 +122,7 @@ class ConfigurationClassBeanDefinitionReader {
 	}
 
 	/**
+	 * 扫描ConfigurationClass并将其以及类中所有带有@Bean的方法注册为BeanDefinition，
 	 * Read a particular {@link ConfigurationClass}, registering bean definitions
 	 * for the class itself and all of its {@link Bean} methods.
 	 */
@@ -140,6 +141,7 @@ class ConfigurationClassBeanDefinitionReader {
 		if (configClass.isImported()) {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
+		// ConfigurationClass中@Bean修饰的方法
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
@@ -238,8 +240,10 @@ class ConfigurationClassBeanDefinitionReader {
 		beanDef.setAttribute(org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor.
 				SKIP_REQUIRED_CHECK_ATTRIBUTE, Boolean.TRUE);
 
+		// BeanDefinition中的@Lazy、@Primary、@DependsOn、@Role、@Description属性
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(beanDef, metadata);
 
+		// autowiredMode属性
 		Autowire autowire = bean.getEnum("autowire");
 		if (autowire.isAutowire()) {
 			beanDef.setAutowireMode(autowire.value());

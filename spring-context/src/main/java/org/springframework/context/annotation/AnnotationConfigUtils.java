@@ -137,6 +137,7 @@ public abstract class AnnotationConfigUtils {
 
 	static {
 		ClassLoader classLoader = AnnotationConfigUtils.class.getClassLoader();
+		// 根据lib中是否包含对应类名判断是否支持相关BeanPostprocessor
 		jsr250Present = ClassUtils.isPresent("javax.annotation.Resource", classLoader);
 		jpaPresent = ClassUtils.isPresent("javax.persistence.EntityManagerFactory", classLoader) &&
 				ClassUtils.isPresent(PERSISTENCE_ANNOTATION_PROCESSOR_CLASS_NAME, classLoader);
@@ -154,6 +155,7 @@ public abstract class AnnotationConfigUtils {
 	}
 
 	/**
+	 * 在注册表中注册所有相关的注解后置处理器
 	 * Register all relevant annotation post processors in the given registry.
 	 *
 	 * @param registry the registry to operate on
@@ -165,6 +167,7 @@ public abstract class AnnotationConfigUtils {
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 
+		//
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
 			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
@@ -177,14 +180,16 @@ public abstract class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
-		// 若不包含CONFIGURATION注解后置处理器
+		// 添加@Configuration注解后置处理器:ConfigurationClassPostProcessor(BeanFactoryPostProcessor)
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
+			// 将ConfigurationClassPostProcessor以CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME做为BeanName
+			// 放入到beanDefinitionMap中，并返回一个holder
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
-		// 若不包含AUTOWIRED注解后置处理器
+		// 添加@Autowired、@Value注解后置处理器:AutowiredAnnotationBeanPostProcessor
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
 			def.setSource(source);
@@ -192,6 +197,7 @@ public abstract class AnnotationConfigUtils {
 		}
 
 		// Check for JSR-250 support, and if present add the CommonAnnotationBeanPostProcessor.
+		// 添加@Resource、@PostConstruct、@PreDestroy注解相关后置处理器:CommonAnnotationBeanPostProcessor
 		if (jsr250Present && !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);
 			def.setSource(source);
@@ -212,12 +218,14 @@ public abstract class AnnotationConfigUtils {
 			beanDefs.add(registerPostProcessor(registry, def, PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
+		// 支持@EventListener注解:EventListenerMethodProcessor
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(EventListenerMethodProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_PROCESSOR_BEAN_NAME));
 		}
 
+		// 注册DefaultEventListenerFactory,用于@EventListener
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_FACTORY_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(DefaultEventListenerFactory.class);
 			def.setSource(source);
@@ -231,7 +239,9 @@ public abstract class AnnotationConfigUtils {
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
 
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// 将该Bean的定义放到beanDefinitionMap中
 		registry.registerBeanDefinition(beanName, definition);
+		// 返回一个holder
 		return new BeanDefinitionHolder(definition, beanName);
 	}
 

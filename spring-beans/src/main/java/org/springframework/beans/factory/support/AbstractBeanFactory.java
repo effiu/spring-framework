@@ -334,6 +334,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							// Explicitly remove instance from singleton cache: It might have been put there
 							// eagerly by the creation process, to allow for circular reference resolution.
 							// Also remove any beans that received a temporary reference to the bean.
+							// 从单例缓存中删除该Bean，因为其可能因为循环依赖提前放入到eagerly缓存中，所以删除所有依赖其的Bean
 							destroySingleton(beanName);
 							throw ex;
 						}

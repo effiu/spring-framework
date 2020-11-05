@@ -186,6 +186,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			synchronized (this.singletonObjects) {
 				// 三级级缓存，存放临时对象，第一次必然为空
 				singletonObject = this.earlySingletonObjects.get(beanName);
+				// allowEarlyReference，Spring写死为true
 				if (singletonObject == null && allowEarlyReference) {
 					// 二级缓存、存放的是工厂(用于代理)
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
@@ -213,8 +214,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		synchronized (this.singletonObjects) {
+			// 从一级缓存中获取Bean
 			Object singletonObject = this.singletonObjects.get(beanName);
 			if (singletonObject == null) {
+				// 判断当前单例池是否正在被销毁
 				if (this.singletonsCurrentlyInDestruction) {
 					throw new BeanCreationNotAllowedException(beanName,
 							"Singleton bean creation not allowed while singletons of this factory are in destruction " +
@@ -223,7 +226,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				// 将当前bean放入到正在创建的集合中去
+				// 将当前bean放入到正在创建的集合singletonsCurrentlyInCreation中去
 				beforeSingletonCreation(beanName);
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
@@ -255,9 +258,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					if (recordSuppressedExceptions) {
 						this.suppressedExceptions = null;
 					}
+					// Bean无论创建成功还是失败都从singletonsCurrentlyInCreation中移除
 					afterSingletonCreation(beanName);
 				}
 				if (newSingleton) {
+					// 若创建成功则将其放入到一级缓存单例池中去，并从二级缓存(singleFactories)和三级缓存(earlySingleObjects)中移除
 					addSingleton(beanName, singletonObject);
 				}
 			}
