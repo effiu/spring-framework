@@ -582,7 +582,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				try {
 					// 第三次调用后置处理器，通过后置处理器合并BeanDefinition,拿到所有需要注入的属性
 					// ApplicationListenerDetector: 将属于ApplicationListener的Bean放入到ApplicationContext上下文的applicationListener集合中
-					// CommonAnnotationBeanPostProcessor: 将@Resource、@webServiceRef、@EJB修饰的属性放入到RootBeanDefinition中
+					// CommonAnnotationBeanPostProcessor: 将@Resource、@WebServiceRef、@EJB修饰的属性放入到RootBeanDefinition中
 					// AutowiredAnnotationBeanPostProcessor: 将@Autowired、@Value、JSR-330相关注解放入到RootBeanDefinition中
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				} catch (Throwable ex) {
