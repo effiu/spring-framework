@@ -20,11 +20,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ResourceUtils;
 
 /**
+ * 加载资源的策略接口(classpath或者文件)。ApplicationContext需要提供该功能
  * Strategy interface for loading resources (e.. class path or file system
  * resources). An {@link org.springframework.context.ApplicationContext}
  * is required to provide this functionality, plus extended
  * {@link org.springframework.core.io.support.ResourcePatternResolver} support.
  *
+ * DefaultResourceLoader是一个单独的实现，可以在ApplicationContext外部使用，也可以用于ResourceEditor
  * <p>{@link DefaultResourceLoader} is a standalone implementation that is
  * usable outside an ApplicationContext, also used by {@link ResourceEditor}.
  *
@@ -46,6 +48,7 @@ public interface ResourceLoader {
 
 
 	/**
+	 * 返回指定资源位置的资源handle。该handle是可复用的资源描述符，
 	 * Return a Resource handle for the specified resource location.
 	 * <p>The handle should always be a reusable resource descriptor,
 	 * allowing for multiple {@link Resource#getInputStream()} calls.

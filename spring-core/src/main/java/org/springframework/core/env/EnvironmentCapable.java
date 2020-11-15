@@ -17,8 +17,11 @@
 package org.springframework.core.env;
 
 /**
+ * 暴露Environment的接口
  * Interface indicating a component that contains and exposes an {@link Environment} reference.
  *
+ * 所有Spring 应用上下文都实现了EnvironmentCapable接口，其主要用于在接口BeanFactory实例的框架方法中执行instanceof检查，
+ * 而且该BeanFactory实例可能不是ApplicationContext实例。
  * <p>All Spring application contexts are EnvironmentCapable, and the interface is used primarily
  * for performing {@code instanceof} checks in framework methods that accept BeanFactory
  * instances that may or may not actually be ApplicationContext instances in order to interact
