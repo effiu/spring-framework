@@ -665,8 +665,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		// 实现disposableBean接口时
 		try {
+			// 第9次调用后置处理器
+			// DestructionAwareBeanPostProcessor.requiresDestruction方法和
+			// DestructionAwareBeanPostProcessor.postProcessBeforeDestruction方法，具体destroy过程见:
+			// org.springframework.beans.factory.support.DisposableBeanAdapter.destroy()方法
 			registerDisposableBeanIfNecessary(beanName, bean, mbd);
 		} catch (BeanDefinitionValidationException ex) {
 			throw new BeanCreationException(

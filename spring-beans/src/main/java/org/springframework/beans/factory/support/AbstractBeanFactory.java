@@ -1855,6 +1855,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor
 	 */
 	protected boolean requiresDestruction(Object bean, RootBeanDefinition mbd) {
+		// 1. 实现DisposableBean、AutoCloseable、BeanDefinition的destroyMethodName属性
+		// 2. BeanPostProcessor中有DestructionAwareBeanPostProcessor子类
 		return (bean.getClass() != NullBean.class &&
 				(DisposableBeanAdapter.hasDestroyMethod(bean, mbd) || (hasDestructionAwareBeanPostProcessors() &&
 						DisposableBeanAdapter.hasApplicableProcessors(bean, getBeanPostProcessors()))));
@@ -1874,11 +1876,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
 		AccessControlContext acc = (System.getSecurityManager() != null ? getAccessControlContext() : null);
+		// 非原型Bean且该Bean在容器shutdown时需要销毁
 		if (!mbd.isPrototype() && requiresDestruction(bean, mbd)) {
 			if (mbd.isSingleton()) {
 				// Register a DisposableBean implementation that performs all destruction
 				// work for the given bean: DestructionAwareBeanPostProcessors,
 				// DisposableBean interface, custom destroy method.
+				// 注册一个DisposableBean的实现，该实现执行给定的Bean的所有销毁工作。
 				registerDisposableBean(beanName,
 						new DisposableBeanAdapter(bean, beanName, mbd, getBeanPostProcessors(), acc));
 			}

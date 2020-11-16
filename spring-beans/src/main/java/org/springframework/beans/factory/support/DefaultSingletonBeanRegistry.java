@@ -578,6 +578,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			// Within full synchronization in order to guarantee a disconnected Set
 			dependencies = this.dependentBeanMap.remove(beanName);
 		}
+		// 销毁依赖的bean
 		if (dependencies != null) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Retrieved dependent beans for bean '" + beanName + "': " + dependencies);
@@ -590,6 +591,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		// Actually destroy the bean now...
 		if (bean != null) {
 			try {
+				/**
+				 * @see DefaultSingletonBeanRegistry#registerDisposableBean(java.lang.String, org.springframework.beans.factory.DisposableBean)
+				 */
 				bean.destroy();
 			}
 			catch (Throwable ex) {

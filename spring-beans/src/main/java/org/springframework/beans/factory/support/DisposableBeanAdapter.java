@@ -208,6 +208,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 	}
 
 	/**
+	 * Spring生命周期中第9次调用后置处理器，若该Bean支持@PreDestory注解,则返回其对应后置处理器
 	 * Search for all DestructionAwareBeanPostProcessors in the List.
 	 * @param processors the List to search
 	 * @return the filtered List of DestructionAwareBeanPostProcessors
@@ -237,12 +238,13 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 
 	@Override
 	public void destroy() {
+		// @PreDestroy
 		if (!CollectionUtils.isEmpty(this.beanPostProcessors)) {
 			for (DestructionAwareBeanPostProcessor processor : this.beanPostProcessors) {
 				processor.postProcessBeforeDestruction(this.bean, this.beanName);
 			}
 		}
-
+		// DisposableBean接口
 		if (this.invokeDisposableBean) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Invoking destroy() on bean with name '" + this.beanName + "'");
@@ -268,7 +270,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 				}
 			}
 		}
-
+		// 推断的destroyMethod，例如close、shutdown方法,xml中的destroy-method、default-destroy-method属性
 		if (this.destroyMethod != null) {
 			invokeCustomDestroyMethod(this.destroyMethod);
 		}
