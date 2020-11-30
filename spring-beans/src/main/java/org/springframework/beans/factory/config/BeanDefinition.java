@@ -23,10 +23,12 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 
 /**
+ * BeanDefinition是Bean实例的一个描述说明。
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
  * concrete implementations.
  *
+ * 这是一个最基础的描述接口：主要是用于BeanFactoryPostProcessor修改属性值以及其他的Bean元数据
  * <p>This is just a minimal interface: The main intention is to allow a
  * {@link BeanFactoryPostProcessor} to introspect and modify property values
  * and other bean metadata.
@@ -41,6 +43,7 @@ import org.springframework.lang.Nullable;
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
+	 * 单例SCOPE
 	 * Scope identifier for the standard singleton scope: {@value}.
 	 * <p>Note that extended bean factories might support further scopes.
 	 *
@@ -50,6 +53,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
 
 	/**
+	 * 原型SCOPE
 	 * Scope identifier for the standard prototype scope: {@value}.
 	 * <p>Note that extended bean factories might support further scopes.
 	 *
@@ -60,13 +64,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 
 	/**
+	 * 该BeanDefinition是应用程序的主要部分，通常对应于用户定义的bean。
 	 * Role hint indicating that a {@code BeanDefinition} is a major part
 	 * of the application. Typically corresponds to a user-defined bean.
-	 * 该BeanDefinition是应用程序的主要部分，通常对应于用户定义的bean。
 	 */
 	int ROLE_APPLICATION = 0;
 
 	/**
+	 * 该BeanDefinition是某些较大配置的支持部分
 	 * Role hint indicating that a {@code BeanDefinition} is a supporting
 	 * part of some larger configuration, typically an outer
 	 * {@link org.springframework.beans.factory.parsing.ComponentDefinition}.
@@ -75,18 +80,18 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * {@link org.springframework.beans.factory.parsing.ComponentDefinition},
 	 * but not when looking at the overall configuration of an application.
 	 * <p>
-	 * 该BeanDefinition是某些较大配置的支持部分
+	 *
 	 */
 	int ROLE_SUPPORT = 1;
 
 	/**
+	 * 该BeanDefinition正在提供完全后台的角色，与最终用户无关。注册属于{@link org.springframework.beans.factory.parsing.ComponentDefinition}
+	 * 内部工作的bean时使用
 	 * Role hint indicating that a {@code BeanDefinition} is providing an
 	 * entirely background role and has no relevance to the end-user. This hint is
 	 * used when registering beans that are completely part of the internal workings
 	 * of a {@link org.springframework.beans.factory.parsing.ComponentDefinition}.
 	 * <p>
-	 * 该BeanDefinition正在提供完全后台的角色，与最终用户无关。注册属于{@link org.springframework.beans.factory.parsing.ComponentDefinition}
-	 * 内部工作的bean时，使用
 	 */
 	int ROLE_INFRASTRUCTURE = 2;
 
@@ -94,6 +99,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	// Modifiable attributes
 
 	/**
+	 * 修改该BeanDefinition的父BeanDefinition的名称
 	 * Set the name of the parent definition of this bean definition, if any.
 	 */
 	void setParentName(@Nullable String parentName);
@@ -105,6 +111,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getParentName();
 
 	/**
+	 * 该BeanDefinition的Bean类名称，该BeanClass可以被BeanFactoryPostProcessor修改
 	 * Specify the bean class name of this bean definition.
 	 * <p>The class name can be modified during bean factory post-processing,
 	 * typically replacing the original class name with a parsed variant of it.
@@ -132,6 +139,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getBeanClassName();
 
 	/**
+	 * Bean的作用域
 	 * Override the target scope of this bean, specifying a new scope name.
 	 *
 	 * @see #SCOPE_SINGLETON
@@ -147,6 +155,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getScope();
 
 	/**
+	 * Bean是否是懒加载
 	 * Set whether this bean should be lazily initialized.
 	 * <p>If {@code false}, the bean will get instantiated on startup by bean
 	 * factories that perform eager initialization of singletons.
@@ -166,12 +175,15 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	void setDependsOn(@Nullable String... dependsOn);
 
 	/**
+	 * 该Bean依赖的其他Bean的名称
 	 * Return the bean names that this bean depends on.
 	 */
 	@Nullable
 	String[] getDependsOn();
 
 	/**
+	 * 该Bean是否适合自动注入到其他bean，仅仅对基于类型的自动装配有效，不会影响按名称的注入，
+	 * 即使Bean未标记为自动注入，名称也将被解析。若名称匹配，将按照名称自动注入
 	 * Set whether this bean is a candidate for getting autowired into some other bean.
 	 * <p>Note that this flag is designed to only affect type-based autowiring.
 	 * It does not affect explicit references by name, which will get resolved even
@@ -198,6 +210,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	boolean isPrimary();
 
 	/**
+	 * 指定要是用的工厂Bean，用于调用指定工厂方法的bean的名称
 	 * Specify the factory bean to use, if any.
 	 * This the name of the bean to call the specified factory method on.
 	 *
@@ -212,6 +225,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getFactoryBeanName();
 
 	/**
+	 * 指定工厂方法。该方法将使用构造方法参数调用，若未指定，则不带参数。
+	 * 若存在工厂Bean，该方法将在指定的工厂Bean上调用，否则做为本地Bean class的静态方法
 	 * Specify a factory method, if any. This method will be invoked with
 	 * constructor arguments, or with no arguments if none are specified.
 	 * The method will be invoked on the specified factory bean, if any,
@@ -229,6 +244,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getFactoryMethodName();
 
 	/**
+	 * Bean的构造方法参数，可以被BeanFactoryPostProcessor修改
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
@@ -246,6 +262,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	}
 
 	/**
+	 * Bean实例的属性值
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
@@ -332,6 +349,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	// Read-only attributes
 
 	/**
+	 *
 	 * Return a resolvable type for this bean definition,
 	 * based on the bean class or other specific metadata.
 	 * <p>This is typically fully resolved on a runtime-merged bean definition

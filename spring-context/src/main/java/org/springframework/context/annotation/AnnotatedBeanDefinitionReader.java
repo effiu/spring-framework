@@ -265,7 +265,7 @@ public class AnnotatedBeanDefinitionReader {
 		abd.setScope(scopeMetadata.getScopeName());
 		// beanName，根据BeanNameGenerator
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
-		// 处理累的通用注解,@Primary、@Lazy、@DependsOn、@Role、@Description
+		// 处理类的通用注解,@Primary、@Lazy、@DependsOn、@Role、@Description
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		// @Qualifier注解相关,如果向容器中注册Bean时，当使用类@Qualifier注解时
 		if (qualifiers != null) {
