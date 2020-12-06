@@ -94,6 +94,9 @@ final class PostProcessorRegistrationDelegate {
 			}
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
+			// 调用BeanDefinitionRegistryPostProcessor#postProcessBeanDefinitionRegistry()方法，
+			// 将@ConfigurationBean及其相关类解析为BeanDefiniton注册到BeanDefinitionMap中，例如方法上的@Bean注解、@Import、@DependsOn
+			// 、@ComponentScan等注解
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
 

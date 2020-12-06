@@ -322,12 +322,14 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
 		do {
-			// 带有@Configuration的类的@Component、@ComponentScan以及扫描指定的packages、@PropertySource、@Import、@ImportResource
-			// 、方法上带有@Bean
+			// 带有@Configuration的类的@Component、@ComponentScan以及扫描指定的packages、@PropertySource、@Import、@ImportResource、方法上带有@Bean
+			// 将带有@Configuration的类以及类内部带有@Bean注解的类、@ComponentScan扫描后的ConfigurationClass注册为BeanDefinition
+			// @Controller、@Service、@Component、@Repository等注解修饰的类会被解析为BeanDefinition
 			parser.parse(candidates);
 			parser.validate();
-
+			// Spring会把已经解析过的配置类放到configurationClasses集合中。
 			Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
+			// 移除已经解析过的配置类
 			configClasses.removeAll(alreadyParsed);
 
 			// Read the model and create bean definitions based on its content
@@ -336,8 +338,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
 						this.importBeanNameGenerator, parser.getImportRegistry());
 			}
-			// 将带有@Configuration的类以及类内部带有@Bean注解的类、@ComponentScan扫描后的ConfigurationClass注册为BeanDefinition
-			// @Controller、@Service、@Component、@Repository等注解修饰的类会被解析为BeanDefinition
+			// reader解析parse过程中标记出的@Import、@ImportSource、@Bean等并将BeanDefinition注册到BeanFactory中
 			this.reader.loadBeanDefinitions(configClasses);
 			alreadyParsed.addAll(configClasses);
 
@@ -350,6 +351,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				for (ConfigurationClass configurationClass : alreadyParsed) {
 					alreadyParsedClasses.add(configurationClass.getMetadata().getClassName());
 				}
+				// 遍历registry中的BeanDefinition判断是否还有为parse过的Configuration类，若存在则继续解析
 				for (String candidateName : newCandidateNames) {
 					if (!oldCandidateNames.contains(candidateName)) {
 						BeanDefinition bd = registry.getBeanDefinition(candidateName);

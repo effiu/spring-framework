@@ -59,6 +59,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 
 	/**
+	 * Spring Boot采用该方式实例化Application Context(通过反射)
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
@@ -69,6 +70,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		// BeanDefinition扫描器,检测指定path下的可能的Bean，并将其注册到BeanFactory或者ApplicationContext中
 		// 可以用来扫描包和类,将其转换为BeanDefinition
+		// 通过AnnotationConfigApplicationContext(Class<?>... componentClasses)方式启动时，其不是真正的scanner,真正的scanner是
+		// org.springframework.context.annotation.ComponentScanAnnotationParser.parse()方法创建的scanner
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -95,6 +98,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
 		this();
+		// 使用reader注册componentClasses到BeanFactory中
 		register(componentClasses);
 		refresh();
 	}

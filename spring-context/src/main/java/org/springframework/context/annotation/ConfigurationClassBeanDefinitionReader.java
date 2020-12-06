@@ -138,6 +138,7 @@ class ConfigurationClassBeanDefinitionReader {
 			return;
 		}
 
+
 		if (configClass.isImported()) {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}

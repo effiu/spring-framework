@@ -35,6 +35,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 表示一个用户定义的@Configuration修饰的Bean Class，其会包含一些@Bean修饰的方法。
  * Represents a user-defined {@link Configuration @Configuration} class.
  * Includes a set of {@link Bean} methods, including all such methods
  * defined in the ancestry of the class, in a 'flattened-out' manner.
@@ -158,6 +159,7 @@ final class ConfigurationClass {
 	}
 
 	/**
+	 * 返回此配置类是通过@{@link Import}注册还是由于嵌套在另一个配置类中而自动注册。
 	 * Return whether this configuration class was registered via @{@link Import} or
 	 * automatically registered due to being nested within another configuration class.
 	 * @since 3.1.1
