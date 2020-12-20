@@ -42,7 +42,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 
 	/** MetadataReader cache: either local or shared at the ResourceLoader level. */
 	@Nullable
-	private Map<Resource, MetadataReader> metadataReaderCache;
+	private Map<Resource, MetadataReader>  metadataReaderCache;
 
 
 	/**

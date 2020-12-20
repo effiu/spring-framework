@@ -20,14 +20,19 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.Nullable;
 
 /**
+ * {@link ImportSelector}的一种变体，将会在所有{@code @Configuration}bean执行后运行. 这种selector类型
+ * 在被导入是{@code @Conditional}时特别有用.
  * A variation of {@link ImportSelector} that runs after all {@code @Configuration} beans
  * have been processed. This type of selector can be particularly useful when the selected
  * imports are {@code @Conditional}.
  *
+ * 该实现也可以扩展{@link org.springframework.core.Ordered}接口或者使用
+ * {@link org.springframework.core.annotation.Order}注解来表明其优先级.
  * <p>Implementations can also extend the {@link org.springframework.core.Ordered}
  * interface or use the {@link org.springframework.core.annotation.Order} annotation to
  * indicate a precedence against other {@link DeferredImportSelector DeferredImportSelectors}.
  *
+ * 该实现也提供一个{@link #getImportGroup() 导入组}，其可以在不同选择器之间提供附加的排序和过滤逻辑.
  * <p>Implementations may also provide an {@link #getImportGroup() import group} which
  * can provide additional sorting and filtering logic across different selectors.
  *

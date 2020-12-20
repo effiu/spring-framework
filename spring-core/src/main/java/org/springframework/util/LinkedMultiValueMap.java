@@ -27,6 +27,7 @@ import java.util.Set;
 import org.springframework.lang.Nullable;
 
 /**
+ * MultiValueMap的简单实现，包装了{@link LinkedHashMap}，在{@link LinkedList}中存储多个值
  * Simple implementation of {@link MultiValueMap} that wraps a {@link LinkedHashMap},
  * storing multiple values in a {@link LinkedList}.
  *

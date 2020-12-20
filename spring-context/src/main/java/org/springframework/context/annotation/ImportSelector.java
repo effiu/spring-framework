@@ -72,6 +72,8 @@ public interface ImportSelector {
 	String[] selectImports(AnnotationMetadata importingClassMetadata);
 
 	/**
+	 * 返回一个断言，以排除导入候选中的类，该断言将可传递地应用于通过此选择的导入找到的类.
+	 * 若该断言为给定的完全限定的类名返回true，则该类将不被视为导入的配置类，从而绕过该类文件的加载.
 	 * Return a predicate for excluding classes from the import candidates, to be
 	 * transitively applied to all classes found through this selector's imports.
 	 * <p>If this predicate returns {@code true} for a given fully-qualified

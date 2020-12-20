@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.lang.Nullable;
 
 /**
+ * {@code Map}接口的扩展，用于存储多个值
  * Extension of the {@code Map} interface that stores multiple values.
  *
  * @author Arjen Poutsma

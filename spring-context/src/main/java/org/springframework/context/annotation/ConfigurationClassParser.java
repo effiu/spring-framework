@@ -188,7 +188,7 @@ class ConfigurationClassParser {
 						"Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
 			}
 		}
-
+		// 处理deferredImportSelector
 		this.deferredImportSelectorHandler.process();
 	}
 
@@ -538,6 +538,8 @@ class ConfigurationClassParser {
 	}
 
 	/**
+	 * 递归收集所有声明的{@code @Import}. 其与大部分愿注解不同，可以使用多个不同值{@code @Import}.
+	 * 从类的第一个元注解返回值是不够的.
 	 * Recursively collect all declared {@code @Import} values. Unlike most
 	 * meta-annotations it is valid to have several {@code @Import}s declared with
 	 * different values; the usual process of returning values from the first
@@ -576,6 +578,7 @@ class ConfigurationClassParser {
 			this.problemReporter.error(new CircularImportProblem(configClass, this.importStack));
 		}
 		else {
+			// importStack是一个deque
 			this.importStack.push(configClass);
 			try {
 				for (SourceClass candidate : importCandidates) {
@@ -584,10 +587,18 @@ class ConfigurationClassParser {
 						Class<?> candidateClass = candidate.loadClass();
 						ImportSelector selector = ParserStrategyUtils.instantiateClass(candidateClass, ImportSelector.class,
 								this.environment, this.resourceLoader, this.registry);
+						/**
+						 * @see DEFAULT_EXCLUSION_FILTER
+						 * DEFAULT_EXCLUSION_FILTER || selectorFilter 是否导入为配置类
+						 */
 						Predicate<String> selectorFilter = selector.getExclusionFilter();
 						if (selectorFilter != null) {
 							exclusionFilter = exclusionFilter.or(selectorFilter);
 						}
+						/**
+						 * 若selector是DeferredImportSelector时, 其将其加入到deferredImportSelectors集合中
+						 * 并在{@link }
+ 						 */
 						if (selector instanceof DeferredImportSelector) {
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						}
@@ -698,6 +709,7 @@ class ConfigurationClassParser {
 		if (className == null || filter.test(className)) {
 			return this.objectSourceClass;
 		}
+		// java开头说明是jdk类
 		if (className.startsWith("java")) {
 			// Never use ASM for core java types
 			try {
@@ -757,13 +769,18 @@ class ConfigurationClassParser {
 		}
 	}
 
-
+	/**
+	 * 一个DeferredImportSelector处理器,
+	 */
 	private class DeferredImportSelectorHandler {
 
 		@Nullable
 		private List<DeferredImportSelectorHolder> deferredImportSelectors = new ArrayList<>();
 
 		/**
+		 * 执行指定的{@link DeferredImportSelector}. 若要收集DeferredImportSelector, 则会
+		 * 将该实例注册到DeferredImportSelectorGroupingHandler中. 若正在处理中,
+		 * {@link DeferredImportSelector}也会根据{@link DeferredImportSelector.Group}立即进行处理.
 		 * Handle the specified {@link DeferredImportSelector}. If deferred import
 		 * selectors are being collected, this registers this instance to the list. If
 		 * they are being processed, the {@link DeferredImportSelector} is also processed
@@ -823,6 +840,7 @@ class ConfigurationClassParser {
 				grouping.getImports().forEach(entry -> {
 					ConfigurationClass configurationClass = this.configurationClasses.get(entry.getMetadata());
 					try {
+						// 递归处理
 						processImports(configurationClass, asSourceClass(configurationClass, exclusionFilter),
 								Collections.singleton(asSourceClass(entry.getImportClassName(), exclusionFilter)),
 								exclusionFilter, false);
@@ -872,6 +890,11 @@ class ConfigurationClassParser {
 
 	private static class DeferredImportSelectorGrouping {
 
+		/**
+		 * DeferredImportSelector实现类实现DeferredImportSelector.Group接口，然后
+		 * group.selectImports(),获取需要导入的Configuration类
+		 * @see
+		 */
 		private final DeferredImportSelector.Group group;
 
 		private final List<DeferredImportSelectorHolder> deferredImports = new ArrayList<>();
