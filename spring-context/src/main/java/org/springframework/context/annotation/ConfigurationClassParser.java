@@ -313,6 +313,12 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @Import annotations
+		/**
+		 * @Import注解有3中使用方式。
+		 * 1. ImportBeanDefinitionRegistrar, 例如: Spring+Mybatis、Spring+Feign、Spring+AspectJ
+		 * 2. ImportSelector, EnableAutoConfiguration的@Import(AutoConfigurationImportSelector.class)
+		 * 3. 导入普通类, 其会被作为@Configuration类处理
+		 */
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
 		// Process any @ImportResource annotations
@@ -334,6 +340,7 @@ class ConfigurationClassParser {
 		}
 
 		// Process default methods on interfaces
+		// 处理Configuration类的接口中的方法
 		processInterfaces(configClass, sourceClass);
 
 		// Process superclass, if any
@@ -394,6 +401,7 @@ class ConfigurationClassParser {
 			for (MethodMetadata methodMetadata : beanMethods) {
 				if (!methodMetadata.isAbstract()) {
 					// A default method or other concrete method on a Java 8+ interface...
+					// java 8+的default方法或者其他具体方法
 					configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
 				}
 			}

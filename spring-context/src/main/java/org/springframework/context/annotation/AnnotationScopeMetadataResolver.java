@@ -24,6 +24,8 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.Assert;
 
 /**
+ *
+ * {@link ScopeMetadataResolver}实现类，默认检查Bean类上的{@link Scope @Scope}注解
  * A {@link ScopeMetadataResolver} implementation that by default checks for
  * the presence of Spring's {@link Scope @Scope} annotation on the bean class.
  *
@@ -38,12 +40,16 @@ import org.springframework.util.Assert;
  */
 public class AnnotationScopeMetadataResolver implements ScopeMetadataResolver {
 
+	/**
+	 * 默认的scope Mode
+	 */
 	private final ScopedProxyMode defaultProxyMode;
 
 	protected Class<? extends Annotation> scopeAnnotationType = Scope.class;
 
 
 	/**
+	 * 构造一个新的{@code AnnotationScopeMetadataResolver}
 	 * Construct a new {@code AnnotationScopeMetadataResolver}.
 	 * @see #AnnotationScopeMetadataResolver(ScopedProxyMode)
 	 * @see ScopedProxyMode#NO
@@ -76,6 +82,7 @@ public class AnnotationScopeMetadataResolver implements ScopeMetadataResolver {
 
 	@Override
 	public ScopeMetadata resolveScopeMetadata(BeanDefinition definition) {
+		// ScopeMetaData有默认值,scopeName为单例,代理模式为No
 		ScopeMetadata metadata = new ScopeMetadata();
 		if (definition instanceof AnnotatedBeanDefinition) {
 			AnnotatedBeanDefinition annDef = (AnnotatedBeanDefinition) definition;

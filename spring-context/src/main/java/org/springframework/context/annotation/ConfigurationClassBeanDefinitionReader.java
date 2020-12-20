@@ -147,7 +147,9 @@ class ConfigurationClassBeanDefinitionReader {
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
 
+		// @ImportSource注解相关
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+		// @Import注解，例如启用AspectJ、启用MyBatis都是在这里完成
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 

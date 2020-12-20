@@ -22,10 +22,13 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.Nullable;
 
 /**
+ * 由类型决定的接口，这些类型根据给定的选择标准(通常是一个或多个注释属性)类确定导入哪个@{@link Configuration}
  * Interface to be implemented by types that determine which @{@link Configuration}
  * class(es) should be imported based on a given selection criteria, usually one or
  * more annotation attributes.
  *
+ * {@link ImportSelector}可能实现了下列任意{@link org.springframework.beans.factory.Aware Aware}接口,
+ * 并且各自的方法将在{@link #selectImports}之前被调用
  * <p>An {@link ImportSelector} may implement any of the following
  * {@link org.springframework.beans.factory.Aware Aware} interfaces,
  * and their respective methods will be called prior to {@link #selectImports}:
@@ -35,7 +38,7 @@ import org.springframework.lang.Nullable;
  * <li>{@link org.springframework.beans.factory.BeanClassLoaderAware BeanClassLoaderAware}</li>
  * <li>{@link org.springframework.context.ResourceLoaderAware ResourceLoaderAware}</li>
  * </ul>
- *
+ * 该类也许为单个构造方法提供下列一个或者多个支持的参数.
  * <p>Alternatively, the class may provide a single constructor with one or more of
  * the following supported parameter types:
  * <ul>
@@ -61,6 +64,7 @@ import org.springframework.lang.Nullable;
 public interface ImportSelector {
 
 	/**
+	 * 根据导入的@{@link Configuration}类的{@link AnnotationMetadata}选择和返回要被导入的类的名称
 	 * Select and return the names of which class(es) should be imported based on
 	 * the {@link AnnotationMetadata} of the importing @{@link Configuration} class.
 	 * @return the class names, or an empty array if none

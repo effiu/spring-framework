@@ -23,14 +23,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 表示导入一个或者多个component类，通常是{@link Configuration @Configuration} 类。
  * Indicates one or more <em>component classes</em> to import &mdash; typically
  * {@link Configuration @Configuration} classes.
  *
+ * 提供与Spring XML中的{@code <import/>}元素一样的功能. 允许导入{@code @Configuration} 类、{@link ImportSelector}和
+ * {@link ImportBeanDefinitionRegistrar}实现，以及常规组件，类似于{@link AnnotationConfigApplicationContext#register}。
  * <p>Provides functionality equivalent to the {@code <import/>} element in Spring XML.
  * Allows for importing {@code @Configuration} classes, {@link ImportSelector} and
  * {@link ImportBeanDefinitionRegistrar} implementations, as well as regular component
  * classes (as of 4.2; analogous to {@link AnnotationConfigApplicationContext#register}).
  *
+ * 声明在{@code @Configuration}类中的{@code @Bean}定义应该通过{@link org.springframework.beans.factory.annotation.Autowired
+ * @Autowired}注入
  * <p>{@code @Bean} definitions declared in imported {@code @Configuration} classes should be
  * accessed by using {@link org.springframework.beans.factory.annotation.Autowired @Autowired}
  * injection. Either the bean itself can be autowired, or the configuration class instance

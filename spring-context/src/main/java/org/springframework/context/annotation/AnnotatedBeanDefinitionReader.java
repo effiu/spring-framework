@@ -53,6 +53,10 @@ public class AnnotatedBeanDefinitionReader {
 
 	private BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
 
+	/**
+	 * 无参数构造方法，scope Mode为No
+	 * @see AnnotationScopeMetadataResolver#AnnotationScopeMetadataResolver()
+	 */
 	private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
 
 	private ConditionEvaluator conditionEvaluator;
@@ -260,7 +264,7 @@ public class AnnotatedBeanDefinitionReader {
 		}
 
 		abd.setInstanceSupplier(supplier);
-		// 作用域scope
+		// scopeMetadata包含scopeName和scope-proxy=No
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		abd.setScope(scopeMetadata.getScopeName());
 		// beanName，根据BeanNameGenerator

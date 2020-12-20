@@ -22,22 +22,27 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
+ * 由在处理{@link Configuration} classes时注册的其他Bean Definition的类型实现的接口
  * Interface to be implemented by types that register additional bean definitions when
  * processing @{@link Configuration} classes. Useful when operating at the bean definition
  * level (as opposed to {@code @Bean} method/instance level) is desired or necessary.
  *
+ * 与{@link Configuration}和{@link ImportSelector}一样，
+ * 此类型的类可以被提供给@{@link Import}注解或者从{@code ImportSelector}返回
  * <p>Along with {@code @Configuration} and {@link ImportSelector}, classes of this type
  * may be provided to the @{@link Import} annotation (or may also be returned from an
  * {@code ImportSelector}).
  *
+ * {@link ImportBeanDefinitionRegistrar}类可以实现任何Aware接口，
+ * 并且他们各自的方法将在{@link #registerBeanDefinitions}之前回调。
  * <p>An {@link ImportBeanDefinitionRegistrar} may implement any of the following
  * {@link org.springframework.beans.factory.Aware Aware} interfaces, and their respective
  * methods will be called prior to {@link #registerBeanDefinitions}:
  * <ul>
  * <li>{@link org.springframework.context.EnvironmentAware EnvironmentAware}</li>
- * <li>{@link org.springframework.beans.factory.BeanFactoryAware BeanFactoryAware}
- * <li>{@link org.springframework.beans.factory.BeanClassLoaderAware BeanClassLoaderAware}
- * <li>{@link org.springframework.context.ResourceLoaderAware ResourceLoaderAware}
+ * <li>{@link org.springframework.beans.factory.BeanFactoryAware BeanFactoryAware}</li>
+ * <li>{@link org.springframework.beans.factory.BeanClassLoaderAware BeanClassLoaderAware}</li>
+ * <li>{@link org.springframework.context.ResourceLoaderAware ResourceLoaderAware}</li>
  * </ul>
  *
  * <p>Alternatively, the class may provide a single constructor with one or more of

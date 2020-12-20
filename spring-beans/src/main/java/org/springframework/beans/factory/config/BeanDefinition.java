@@ -27,7 +27,7 @@ import org.springframework.lang.Nullable;
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
  * concrete implementations.
- *
+ * <p>
  * 这是一个最基础的描述接口：主要是用于BeanFactoryPostProcessor修改属性值以及其他的Bean元数据
  * <p>This is just a minimal interface: The main intention is to allow a
  * {@link BeanFactoryPostProcessor} to introspect and modify property values
@@ -80,7 +80,6 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * {@link org.springframework.beans.factory.parsing.ComponentDefinition},
 	 * but not when looking at the overall configuration of an application.
 	 * <p>
-	 *
 	 */
 	int ROLE_SUPPORT = 1;
 
@@ -349,7 +348,6 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	// Read-only attributes
 
 	/**
-	 *
 	 * Return a resolvable type for this bean definition,
 	 * based on the bean class or other specific metadata.
 	 * <p>This is typically fully resolved on a runtime-merged bean definition

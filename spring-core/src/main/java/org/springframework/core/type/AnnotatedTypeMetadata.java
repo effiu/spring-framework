@@ -29,6 +29,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
 
 /**
+ * 定义对特殊类型的注解的访问({@link AnnotationMetadata class}or {@link MethodMetadata method})。
  * Defines access to the annotations of a specific type ({@link AnnotationMetadata class}
  * or {@link MethodMetadata method}), in a form that does not necessarily require the
  * class-loading.
@@ -46,6 +47,7 @@ import org.springframework.util.MultiValueMap;
 public interface AnnotatedTypeMetadata {
 
 	/**
+	 * 根据直接注解的基础元素，返回注解详细信息
 	 * Return annotation details based on the direct annotations of the
 	 * underlying element.
 	 * @return merged annotations based on the direct annotations
@@ -54,6 +56,7 @@ public interface AnnotatedTypeMetadata {
 	MergedAnnotations getAnnotations();
 
 	/**
+	 * 判断元素是否有给定类型的注解或者元注解
 	 * Determine whether the underlying element has an annotation or meta-annotation
 	 * of the given type defined.
 	 * <p>If this method returns {@code true}, then
@@ -67,6 +70,7 @@ public interface AnnotatedTypeMetadata {
 	}
 
 	/**
+	 * 检索给定类型的注解的属性。若存在(例如，若在基础元素上定义为直接注解或者元数据)，则还应该考虑对已组合注释的属性覆盖。
 	 * Retrieve the attributes of the annotation of the given type, if any (i.e. if
 	 * defined on the underlying element, as direct annotation or meta-annotation),
 	 * also taking attribute overrides on composed annotations into account.
@@ -87,6 +91,7 @@ public interface AnnotatedTypeMetadata {
 	 * also taking attribute overrides on composed annotations into account.
 	 * @param annotationName the fully qualified class name of the annotation
 	 * type to look for
+	 *      是否将类引用转换为字符串，便于在返回的map中作为值公开，而不是可能要首先加载的类引用
 	 * @param classValuesAsString whether to convert class references to String
 	 * class names for exposure as values in the returned Map, instead of Class
 	 * references which might potentially have to be loaded first
@@ -123,6 +128,7 @@ public interface AnnotatedTypeMetadata {
 	}
 
 	/**
+	 * 检索给定类型的所有注解的所有属性，若存在(若在基础元素上定义为直接注解或者元数据)
 	 * Retrieve all attributes of all annotations of the given type, if any (i.e. if
 	 * defined on the underlying element, as direct annotation or meta-annotation).
 	 * Note that this variant does <i>not</i> take attribute overrides into account.

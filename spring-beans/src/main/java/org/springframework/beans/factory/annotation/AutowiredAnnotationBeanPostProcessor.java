@@ -134,7 +134,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	/**
-	 * 支持的注解
+	 * 支持的注解.
 	 */
 	private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(4);
 
