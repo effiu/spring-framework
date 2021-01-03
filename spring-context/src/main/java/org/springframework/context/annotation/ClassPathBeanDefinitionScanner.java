@@ -86,6 +86,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * of a {@code BeanDefinitionRegistry}
 	 */
 	public ClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry) {
+		// useDefaultFilters会启用默认的Filters用于过滤可以被Spring管理的Bean,例如@Component注解,JSR-330,JAVA EE 6等
 		this(registry, true);
 	}
 

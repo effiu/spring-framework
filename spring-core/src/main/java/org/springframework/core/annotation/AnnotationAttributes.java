@@ -27,6 +27,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * {@link LinkedHashMap}子类，表示注解属性{@link AnnotationUtils},
+ * {@link AnnotatedElementUtils}以及Spring基于反射和ASM的
+ * {@link org.springframework.core.type.AnnotationMetadata}读取的键值对.
+ *
  * {@link LinkedHashMap} subclass representing annotation attribute
  * <em>key-value</em> pairs as read by {@link AnnotationUtils},
  * {@link AnnotatedElementUtils}, and Spring's reflection- and ASM-based

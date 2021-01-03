@@ -304,7 +304,6 @@ class ConfigurationClassParser {
 					if (bdCand == null) {
 						bdCand = holder.getBeanDefinition();
 					}
-
 					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
 						parse(bdCand.getBeanClassName(), holder.getBeanName());
 					}
@@ -316,7 +315,7 @@ class ConfigurationClassParser {
 		/**
 		 * @Import注解有3中使用方式。
 		 * 1. ImportBeanDefinitionRegistrar, 例如: Spring+Mybatis、Spring+Feign、Spring+AspectJ
-		 * 2. ImportSelector, EnableAutoConfiguration的@Import(AutoConfigurationImportSelector.class)
+		 * 2. ImportSelector, @EnableAutoConfiguration的@Import(AutoConfigurationImportSelector.class)
 		 * 3. 导入普通类, 其会被作为@Configuration类处理
 		 */
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
@@ -603,6 +602,7 @@ class ConfigurationClassParser {
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						}
 						else {
+							// 获取selector返回的name，将其作为ConfigurationClass处理
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames, exclusionFilter);
 							processImports(configClass, currentSourceClass, importSourceClasses, exclusionFilter, false);
@@ -807,7 +807,9 @@ class ConfigurationClassParser {
 				if (deferredImports != null) {
 					DeferredImportSelectorGroupingHandler handler = new DeferredImportSelectorGroupingHandler();
 					deferredImports.sort(DEFERRED_IMPORT_COMPARATOR);
+					// 将deferredImport注册到DeferredImportSelectorGroupingHandler中
 					deferredImports.forEach(handler::register);
+					// 执行deferredImport
 					handler.processGroupImports();
 				}
 			}
@@ -825,18 +827,32 @@ class ConfigurationClassParser {
 		private final Map<AnnotationMetadata, ConfigurationClass> configurationClasses = new HashMap<>();
 
 		public void register(DeferredImportSelectorHolder deferredImport) {
+			/**
+			 * 获取deferredImport对应的Group
+			 * @see org.springframework.boot.autoconfigure.AutoConfigurationImportSelector#getImportGroup()
+			 */
 			Class<? extends Group> group = deferredImport.getImportSelector().getImportGroup();
+			// 将deferredImport对应的handler放入到groupings集合中
 			DeferredImportSelectorGrouping grouping = this.groupings.computeIfAbsent(
 					(group != null ? group : deferredImport),
 					key -> new DeferredImportSelectorGrouping(createGroup(group)));
 			grouping.add(deferredImport);
+			// 记录其ConfigurationClass
 			this.configurationClasses.put(deferredImport.getConfigurationClass().getMetadata(),
 					deferredImport.getConfigurationClass());
 		}
 
 		public void processGroupImports() {
+			// 遍历groupings，并执行每个handler
 			for (DeferredImportSelectorGrouping grouping : this.groupings.values()) {
 				Predicate<String> exclusionFilter = grouping.getCandidateFilter();
+				/**
+				 * @see org.springframework.boot.autoconfigure.AutoConfigurationImportSelector.AutoConfigurationGroup#selectImports()
+				 * 以@{@code AutoConfigurationGroup#selectImports()}为例, grouping.getImports(),会先调用process()方法，
+				 * 会调用{@link org.springframework.core.io.support.SpringFactoriesLoader#loadFactoryNames(java.lang.Class, java.lang.ClassLoader)}
+				 * 将META-INF/spring.factories下的"org.springframework.boot.autoconfigure
+				 * .EnableAutoConfiguration"指定的类作为@Configuration类解析
+				 */
 				grouping.getImports().forEach(entry -> {
 					ConfigurationClass configurationClass = this.configurationClasses.get(entry.getMetadata());
 					try {

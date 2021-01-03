@@ -192,6 +192,11 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
+	 * 注册默认的{@link Component @Component}Filter.
+	 * 该Filter包含将隐式注册具有{@link Component @Component}元注解的所有注释, 包括
+	 * {@link Repository @Repository}, {@link Service @Service}, 和{@link Controller @Controller}
+	 * 构造型注释.
+	 * 该Filter也支持Java EE 6的{@link javax.annotation.ManagedBean}和JSR-330的{@link javax.inject.Named}.
 	 * Register the default filter for {@link Component @Component}.
 	 * <p>This will implicitly register all annotations that have the
 	 * {@link Component @Component} meta-annotation including the
@@ -203,6 +208,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {
+		// 默认添加@Component注解filter
 		this.includeFilters.add(new AnnotationTypeFilter(Component.class));
 		ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
 		try {
