@@ -191,6 +191,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					// 二级缓存、存放的是工厂(用于代理)
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
+						// 循环依赖时使用提前暴露的工厂方法，生成代理类
 						singletonObject = singletonFactory.getObject();
 						// 将通过工厂创建的代理类，放入到三级缓存中
 						this.earlySingletonObjects.put(beanName, singletonObject);

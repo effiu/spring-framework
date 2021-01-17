@@ -17,6 +17,7 @@
 package org.springframework.aop;
 
 /**
+ * 核心Spring 切入点抽象。
  * Core Spring pointcut abstraction.
  *
  * <p>A pointcut is composed of a {@link ClassFilter} and a {@link MethodMatcher}.
@@ -33,12 +34,14 @@ package org.springframework.aop;
 public interface Pointcut {
 
 	/**
+	 * 返回该切入点的ClassFilter，将切入点限制为给定的一组目标类
 	 * Return the ClassFilter for this pointcut.
 	 * @return the ClassFilter (never {@code null})
 	 */
 	ClassFilter getClassFilter();
 
 	/**
+	 * 返回该切入点的MethodMatcher，
 	 * Return the MethodMatcher for this pointcut.
 	 * @return the MethodMatcher (never {@code null})
 	 */

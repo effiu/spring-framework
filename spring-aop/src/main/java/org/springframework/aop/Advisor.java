@@ -19,6 +19,8 @@ package org.springframework.aop;
 import org.aopalliance.aop.Advice;
 
 /**
+ * 基本接口，包含AOP<b>advice</b>(在连接点采取的操作)和确定advice适用性的过滤器（例如切入点）。
+ * 该界面不供Spring用户使用，而是为了支持不同类型的advice而具有通用性。
  * Base interface holding AOP <b>advice</b> (action to take at a joinpoint)
  * and a filter determining the applicability of the advice (such as
  * a pointcut). <i>This interface is not for use by Spring users, but to

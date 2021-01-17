@@ -705,7 +705,7 @@ public abstract class ClassUtils {
 		return getAllInterfacesForClass(clazz, null);
 	}
 
-	/**
+	/** 返回给定class的实现的所有接口，包括父类实现的接口
 	 * Return all interfaces that the given class implements as an array,
 	 * including ones implemented by superclasses.
 	 * <p>If the class itself is an interface, it gets returned as sole interface.
