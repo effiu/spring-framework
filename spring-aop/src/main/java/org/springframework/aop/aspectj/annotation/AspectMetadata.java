@@ -32,6 +32,7 @@ import org.springframework.aop.framework.AopConfigException;
 import org.springframework.aop.support.ComposablePointcut;
 
 /**
+ * AspectJ切面类的元数据
  * Metadata for an AspectJ aspect class, with an additional Spring AOP pointcut
  * for the per clause.
  *
@@ -66,6 +67,7 @@ public class AspectMetadata implements Serializable {
 	private transient AjType<?> ajType;
 
 	/**
+	 * Spring AOP切入点
 	 * Spring AOP pointcut corresponding to the per clause of the
 	 * aspect. Will be the Pointcut.TRUE canonical instance in the
 	 * case of a singleton, otherwise an AspectJExpressionPointcut.
@@ -83,6 +85,7 @@ public class AspectMetadata implements Serializable {
 
 		Class<?> currClass = aspectClass;
 		AjType<?> ajType = null;
+		//TODO while循环的意义
 		while (currClass != Object.class) {
 			AjType<?> ajTypeToCheck = AjTypeSystem.getAjType(currClass);
 			if (ajTypeToCheck.isAspect()) {

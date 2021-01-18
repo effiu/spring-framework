@@ -44,6 +44,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.Nullable;
 
 /**
+ * 工厂的抽象基本类，其可以创建Spring AOP Advisor.
  * Abstract base class for factories that can create Spring AOP Advisors
  * given AspectJ classes from classes honoring the AspectJ 5 annotation syntax.
  *
@@ -59,6 +60,9 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 
 	private static final String AJC_MAGIC = "ajc$";
 
+	/**
+	 * AspectJ 注解类支持的注解
+	 */
 	private static final Class<?>[] ASPECTJ_ANNOTATION_CLASSES = new Class<?>[] {
 			Pointcut.class, Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class};
 

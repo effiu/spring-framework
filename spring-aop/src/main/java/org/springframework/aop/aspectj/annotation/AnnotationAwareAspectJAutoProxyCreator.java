@@ -28,9 +28,11 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * {@link AspectJAwareAdvisorAutoProxyCreator}的子类，其处理当前Spring容器以及Spring Advisor中的所有AspectJ注解切面。
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
  *
+ * 如果Spring AOP的基于代理的模型能够应用任何AspectJ注释的类，任何AspectJ注解修饰的类将会被自动识别。
  * <p>Any AspectJ annotated classes will automatically be recognized, and their
  * advice applied if Spring AOP's proxy-based model is capable of applying it.
  * This covers method execution joinpoints.
@@ -89,6 +91,7 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 	@Override
 	protected List<Advisor> findCandidateAdvisors() {
 		// Add all the Spring advisors found according to superclass rules.
+		// 根据父类规则发现的advisor
 		List<Advisor> advisors = super.findCandidateAdvisors();
 		// Build Advisors for all AspectJ aspects in the bean factory.
 		if (this.aspectJAdvisorsBuilder != null) {

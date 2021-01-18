@@ -27,6 +27,7 @@ import org.springframework.aop.framework.AopConfigException;
 import org.springframework.lang.Nullable;
 
 /**
+ * 可以根据使用AspectJ注解语法的类创建Spring AOP Advisors的工厂接口。
  * Interface for factories that can create Spring AOP Advisors from classes
  * annotated with AspectJ annotation syntax.
  *
@@ -39,6 +40,7 @@ import org.springframework.lang.Nullable;
 public interface AspectJAdvisorFactory {
 
 	/**
+	 * 根据AspectJ的{@link org.aspectj.lang.reflect.AjTypeSystem}报告，判断给定的类是否是一个切面。
 	 * Determine whether or not the given class is an aspect, as reported
 	 * by AspectJ's {@link org.aspectj.lang.reflect.AjTypeSystem}.
 	 * <p>Will simply return {@code false} if the supposed aspect is
@@ -52,6 +54,7 @@ public interface AspectJAdvisorFactory {
 	boolean isAspect(Class<?> clazz);
 
 	/**
+	 * 给定的类是否是一个有效的AspectJ类。
 	 * Is the given class a valid AspectJ aspect class?
 	 * @param aspectClass the supposed AspectJ annotation-style class to validate
 	 * @throws AopConfigException if the class is an invalid aspect
@@ -62,6 +65,7 @@ public interface AspectJAdvisorFactory {
 	void validate(Class<?> aspectClass) throws AopConfigException;
 
 	/**
+	 * 在指定的切面实例上，为所有At-AspectJ方法构建Spring AOP Advisors。
 	 * Build Spring AOP Advisors for all annotated At-AspectJ methods
 	 * on the specified aspect instance.
 	 * @param aspectInstanceFactory the aspect instance factory
@@ -71,6 +75,7 @@ public interface AspectJAdvisorFactory {
 	List<Advisor> getAdvisors(MetadataAwareAspectInstanceFactory aspectInstanceFactory);
 
 	/**
+	 * 为给定的AspectJ advice方法构建一个Spring AOP advisor。
 	 * Build a Spring AOP Advisor for the given AspectJ advice method.
 	 * @param candidateAdviceMethod the candidate advice method
 	 * @param aspectInstanceFactory the aspect instance factory
@@ -85,6 +90,7 @@ public interface AspectJAdvisorFactory {
 			int declarationOrder, String aspectName);
 
 	/**
+	 * 为给定的AspectJ advice方法构建一个Spring AOP advisor。
 	 * Build a Spring AOP Advice for the given AspectJ advice method.
 	 * @param candidateAdviceMethod the candidate advice method
 	 * @param expressionPointcut the AspectJ expression pointcut
