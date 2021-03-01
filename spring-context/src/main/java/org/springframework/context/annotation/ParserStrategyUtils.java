@@ -34,6 +34,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 用于处理解析策略的通用委托代码
  * Common delegate code for the handling of parser strategies, e.g.
  * {@code TypeFilter}, {@code ImportSelector}, {@code ImportBeanDefinitionRegistrar}
  *
@@ -44,6 +45,9 @@ import org.springframework.util.Assert;
 abstract class ParserStrategyUtils {
 
 	/**
+	 * 使用合适的构造方法实例化一个类，返回新的实例。若新实例是由给定对象实现的，那么其将调用
+	 * {@link BeanClassLoaderAware}、{@link BeanFactoryAware}、{@link EnvironmentAware}
+	 * 、{@link ResourceLoaderAware}
 	 * Instantiate a class using an appropriate constructor and return the new
 	 * instance as the specified assignable type. The returned instance will
 	 * have {@link BeanClassLoaderAware}, {@link BeanFactoryAware},
@@ -63,6 +67,7 @@ abstract class ParserStrategyUtils {
 		ClassLoader classLoader = (registry instanceof ConfigurableBeanFactory ?
 				((ConfigurableBeanFactory) registry).getBeanClassLoader() : resourceLoader.getClassLoader());
 		T instance = (T) createInstance(clazz, environment, resourceLoader, registry, classLoader);
+		// 调用对应的aware方法
 		ParserStrategyUtils.invokeAwareMethods(instance, environment, resourceLoader, registry, classLoader);
 		return instance;
 	}
@@ -72,9 +77,11 @@ abstract class ParserStrategyUtils {
 			@Nullable ClassLoader classLoader) {
 
 		Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+		// 当构造方法为1个，且非无参构造方法时
 		if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
 			try {
 				Constructor<?> constructor = constructors[0];
+				// 根据parameterType判断参数，然后进行实例化
 				Object[] args = resolveArgs(constructor.getParameterTypes(),
 						environment, resourceLoader, registry, classLoader);
 				return BeanUtils.instantiateClass(constructor, args);
@@ -83,6 +90,7 @@ abstract class ParserStrategyUtils {
 				throw new BeanInstantiationException(clazz, "No suitable constructor found", ex);
 			}
 		}
+		// 直接调用无参构造方法实例化
 		return BeanUtils.instantiateClass(clazz);
 	}
 

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import org.springframework.lang.Nullable;
 
 /**
+ * 简单的持有资源描述符的{@link Resource}实现，但是不是指向实际可读的资源
  * Simple {@link Resource} implementation that holds a resource description
  * but does not point to an actually readable resource.
  *

@@ -128,6 +128,8 @@ abstract class ConfigurationClassUtils {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
 		else if (config != null || isConfigurationCandidate(metadata)) {
+			// isConfigurationCandidate方法检查该metadata是否包含@Cofiguration类候选的注解
+			// (@Component、@ComponentScan、@Import、@ImportSource)
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
 		else {
@@ -144,6 +146,7 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
+	 * 判断给定的metadata是否是配置类的候选对象(即{@code Configuration}类支持的注解,{@link ConfigurationClassUtils#candidateIndicators})
 	 * Check the given metadata for a configuration class candidate
 	 * (or nested component class declared within a configuration/component class).
 	 * @param metadata the metadata of the annotated class

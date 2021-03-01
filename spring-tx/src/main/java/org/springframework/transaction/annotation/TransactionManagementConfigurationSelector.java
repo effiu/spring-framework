@@ -38,6 +38,10 @@ import org.springframework.util.ClassUtils;
 public class TransactionManagementConfigurationSelector extends AdviceModeImportSelector<EnableTransactionManagement> {
 
 	/**
+	 * Spring通过{@link ProxyTransactionManagementConfiguration}是
+	 *
+	 *
+	 * 根据{@link EnableTransactionManagement#mode()}返回被导入的类的名称。
 	 * Returns {@link ProxyTransactionManagementConfiguration} or
 	 * {@code AspectJ(Jta)TransactionManagementConfiguration} for {@code PROXY}
 	 * and {@code ASPECTJ} values of {@link EnableTransactionManagement#mode()},
@@ -56,6 +60,10 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 		}
 	}
 
+	/**
+	 * 判断事务切面类
+	 * @return
+	 */
 	private String determineTransactionAspectClass() {
 		return (ClassUtils.isPresent("javax.transaction.Transactional", getClass().getClassLoader()) ?
 				TransactionManagementConfigUtils.JTA_TRANSACTION_ASPECT_CONFIGURATION_CLASS_NAME :

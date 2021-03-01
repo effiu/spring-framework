@@ -30,8 +30,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
+ * 用于根据类型变量解析泛型的Helper类。
  * Helper class for resolving generic types against type variables.
- *
+ * 主要在框架内使用，解析方法参数类型。
  * <p>Mainly intended for usage within the framework, resolving method
  * parameter types even when they are declared generically.
  *
@@ -53,6 +54,7 @@ public final class GenericTypeResolver {
 
 
 	/**
+	 * 判断给定通用参数类型的目标类型
 	 * Determine the target type for the given generic parameter type.
 	 * @param methodParameter the method parameter specification
 	 * @param implementationClass the class to resolve type variables against
@@ -68,6 +70,7 @@ public final class GenericTypeResolver {
 	}
 
 	/**
+	 * 确定给定方法的通用返回类型的目标类型
 	 * Determine the target type for the generic return type of the given method,
 	 * where formal type variables are declared on the given class.
 	 * @param method the method to introspect
@@ -100,6 +103,7 @@ public final class GenericTypeResolver {
 	}
 
 	/**
+	 * 针对给定的目标类解析给定通用接口的单个类型参数，假定该目标类实现了通用接口，并可能为其类型变量声明一个具体类型。
 	 * Resolve the single type argument of the given generic interface against
 	 * the given target class which is assumed to implement the generic interface
 	 * and possibly declare a concrete type for its type variable.

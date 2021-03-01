@@ -43,6 +43,7 @@ import org.springframework.lang.Nullable;
 public interface DeferredImportSelector extends ImportSelector {
 
 	/**
+	 * 返回指定的import组
 	 * Return a specific import group.
 	 * <p>The default implementations return {@code null} for no grouping required.
 	 * @return the import group class, or {@code null} if none
@@ -55,18 +56,21 @@ public interface DeferredImportSelector extends ImportSelector {
 
 
 	/**
+	 * 用于对不同ImportSelector的返回结果进行分组的接口
 	 * Interface used to group results from different import selectors.
 	 * @since 5.0
 	 */
 	interface Group {
 
 		/**
+		 * 使用指定的{@link DeferredImportSelector}处理导入的@{@link Configuration}类的{@link AnnotationMetadata}
 		 * Process the {@link AnnotationMetadata} of the importing @{@link Configuration}
 		 * class using the specified {@link DeferredImportSelector}.
 		 */
 		void process(AnnotationMetadata metadata, DeferredImportSelector selector);
 
 		/**
+		 * 返回应该被导入的{@link Entry entries}
 		 * Return the {@link Entry entries} of which class(es) should be imported
 		 * for this group.
 		 */
