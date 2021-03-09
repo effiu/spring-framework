@@ -30,6 +30,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 处理AOP自动代理创建者的自动注册
  * Utility class for handling registration of AOP auto-proxy creators.
  *
  * <p>Only a single auto-proxy creator should be registered yet multiple concrete
@@ -100,6 +101,11 @@ public abstract class AopConfigUtils {
 		return registerOrEscalateApcAsRequired(AnnotationAwareAspectJAutoProxyCreator.class, registry, source);
 	}
 
+	/**
+	 * 强制使用CGLIB代理
+	 * @see org.springframework.context.annotation.EnableAspectJAutoProxy#proxyTargetClass()
+	 * @param registry
+	 */
 	public static void forceAutoProxyCreatorToUseClassProxying(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
@@ -107,6 +113,11 @@ public abstract class AopConfigUtils {
 		}
 	}
 
+	/**
+	 * 是否将当前代理类由AOP框架公开到ThreadLocal中
+	 * {@link org.springframework.context.annotation.EnableAspectJAutoProxy#exposeProxy()}
+	 * @param registry
+	 */
 	public static void forceAutoProxyCreatorToExposeProxy(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
@@ -132,6 +143,11 @@ public abstract class AopConfigUtils {
 			return null;
 		}
 
+		/**
+		 * 将AnnotationAwareAspectJAutoProxyCreator注册为BeanDefinition
+		 * @see org.springframework.context.support.PostProcessorRegistrationDelegate.registerBeanPostProcessors(org.springframework.beans.factory.config.ConfigurableListableBeanFactory, org.springframework.context.support.AbstractApplicationContext)
+		 * 会将该BeanDefinition添加到BeanPostProcessor集合中
+ 		 */
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);

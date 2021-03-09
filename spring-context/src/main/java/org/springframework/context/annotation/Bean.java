@@ -229,9 +229,12 @@ public @interface Bean {
 	String[] value() default {};
 
 	/**
+	 * BeanName，当多个name时，则为主Bean名称加别名
 	 * The name of this bean, or if several names, a primary bean name plus aliases.
+	 * 若未指定名称，则Bean的名称为带注释的方法的名称。若指定则忽略方法名
 	 * <p>If left unspecified, the name of the bean is the name of the annotated method.
 	 * If specified, the method name is ignored.
+	 * 若未声明其他属性，bean名称和别名也可以通过{@link #value}属性配置
 	 * <p>The bean name and aliases may also be configured via the {@link #value}
 	 * attribute if no other attributes are declared.
 	 * @see #value

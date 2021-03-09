@@ -372,6 +372,8 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	}
 
 	/**
+	 * 移除所有已经被垃圾回收且不再被引用的条目。正常情况下，随着在Map中添加或者删除项目，
+	 * gc收集的条目将会被自动回收。该方法可以用于强制清楚，当Map读取频繁但更新频率低时，非常有用
 	 * Remove any entries that have been garbage collected and are no longer referenced.
 	 * Under normal circumstances garbage collected entries are automatically purged as
 	 * items are added or removed from the Map. This method can be used to force a purge,

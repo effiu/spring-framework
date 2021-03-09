@@ -241,9 +241,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
-
-		//TODO
-		// 通过name获取Bean，而不是直接做为Bean name，因为1.name可能会以&开头，2.别名问题，需要转换
+		//TODO 通过name获取Bean，而不是直接做为Bean name，因为1.name可能会以&开头，2.别名问题，需要转换
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
@@ -505,6 +503,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
+	 * {@link #isTypeMatch(String, ResolvableType)}的内部扩展变体，用于检查具有给定名称
+	 * 的Bean是否与指定的类型匹配。
 	 * Internal extended variant of {@link #isTypeMatch(String, ResolvableType)}
 	 * to check whether the bean with the given name matches the specified type. Allow
 	 * additional constraints to be applied to ensure that beans are not created early.
@@ -522,12 +522,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			throws NoSuchBeanDefinitionException {
 
 		String beanName = transformedBeanName(name);
+		// 判断beanName是否是一个工厂引用，以&开头
 		boolean isFactoryDereference = BeanFactoryUtils.isFactoryDereference(name);
 
 		// Check manually registered singletons.
+		// 从缓存中获取Bean实例
 		Object beanInstance = getSingleton(beanName, false);
+		// 若缓存中已经存在且非NullBean
 		if (beanInstance != null && beanInstance.getClass() != NullBean.class) {
+			// 当是FactoryBean时
 			if (beanInstance instanceof FactoryBean) {
+				// 非以&开头的
 				if (!isFactoryDereference) {
 					Class<?> type = getTypeForFactoryBean((FactoryBean<?>) beanInstance);
 					return (type != null && typeToMatch.isAssignableFrom(type));
@@ -536,6 +541,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					return typeToMatch.isInstance(beanInstance);
 				}
 			}
+			// 非FactoryBean且不是以&开头的
 			else if (!isFactoryDereference) {
 				if (typeToMatch.isInstance(beanInstance)) {
 					// Direct match for exposed instance?

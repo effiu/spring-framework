@@ -95,11 +95,19 @@ public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProx
 		AspectJProxyUtils.makeAdvisorChainAspectJCapableIfNecessary(candidateAdvisors);
 	}
 
+	/**
+	 * 其内部逻辑是先在BeanFactory中查找所有Type为Advisor.class的BeanName，然后从BeanFactory中找到对应的
+	 * Bean(List\<Advisor\>)，遍历该集合，判断是否存在匹配该beanName的Advisor，存在则说明该类是Advisor
+	 * @param beanClass the class of the bean
+	 * @param beanName the name of the bean
+	 * @return
+	 */
 	@Override
 	protected boolean shouldSkip(Class<?> beanClass, String beanName) {
 		// TODO: Consider optimization by caching the list of the aspect names（考虑通过缓存切面name优化）
-		//
+		// 查找所有用于发现自动代理的候选Advisor
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
+		// 判断当前BeanName是否存在匹配成功的Advisor
 		for (Advisor advisor : candidateAdvisors) {
 			if (advisor instanceof AspectJPointcutAdvisor &&
 					((AspectJPointcutAdvisor) advisor).getAspectName().equals(beanName)) {

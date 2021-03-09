@@ -282,8 +282,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
-			// 若为不应该被代理的类，或者original instance beanName
-			// shouldSkip(Class,String)
+			// 若为不应该被代理的类，或者该bean为Advisor
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;
@@ -294,7 +293,6 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		// Suppresses unnecessary default instantiation of the target bean:
 		// The TargetSource will handle target instances in a custom fashion.
 		// 如果由自定义的TargetSource，将在这里创建代理。禁止目标bean非必要的实例化，TargetSource将以自定义方式处理目标实例
-		//TODO AspectJ时返回null，非null未知
 		TargetSource targetSource = getCustomTargetSource(beanClass, beanName);
 		if (targetSource != null) {
 			if (StringUtils.hasLength(beanName)) {
@@ -444,7 +442,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 
 	/**
-	 * 使用TargetSourceCreators从Bean实例中创建一个targetSource。
+	 * 为bean实例创建targetSource。若已经设置TargetSourceCreators，则直接使用。
 	 * Create a target source for bean instances. Uses any TargetSourceCreators if set.
 	 * Returns {@code null} if no custom TargetSource should be used.
 	 * <p>This implementation uses the "customTargetSourceCreators" property.

@@ -84,6 +84,7 @@ import org.springframework.util.StringUtils;
 public class ResolvableType implements Serializable {
 
 	/**
+	 * 当没有可用值时，返回该实例。
 	 * {@code ResolvableType} returned when no value is available. {@code NONE} is used
 	 * in preference to {@code null} so that multiple method calls can be safely chained.
 	 */
@@ -243,6 +244,7 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 判断给定的对象是否是ResolvableType指定的实例
 	 * Determine whether the given object is an instance of this {@code ResolvableType}.
 	 * @param obj the object to check
 	 * @since 4.2
@@ -253,6 +255,7 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 判断是否可以从指定的type分配{@code ResolvableType}
 	 * Determine whether this {@code ResolvableType} is assignable from the
 	 * specified other type.
 	 * @param other the type to be checked against (as a {@code Class})
@@ -282,11 +285,13 @@ public class ResolvableType implements Serializable {
 		Assert.notNull(other, "ResolvableType must not be null");
 
 		// If we cannot resolve types, we are not assignable
+		// 当this或者other为NONE时
 		if (this == NONE || other == NONE) {
 			return false;
 		}
 
 		// Deal with array by delegating to the component type
+		// 当this为数组时，则只有当other也是数组且this与other的
 		if (isArray()) {
 			return (other.isArray() && getComponentType().isAssignableFrom(other.getComponentType()));
 		}
@@ -383,6 +388,7 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 返回表示数组的组件类型的ResolvableType，若该类型不是数组，则返回{@link #NONE}
 	 * Return the ResolvableType representing the component type of the array or
 	 * {@link #NONE} if this type does not represent an array.
 	 * @see #isArray()
@@ -394,6 +400,7 @@ public class ResolvableType implements Serializable {
 		if (this.componentType != null) {
 			return this.componentType;
 		}
+		// 当类型为Class时，通过强转为Class，调用native方法
 		if (this.type instanceof Class) {
 			Class<?> componentType = ((Class<?>) this.type).getComponentType();
 			return forType(componentType, this.variableResolver);
@@ -500,6 +507,7 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 若该type包含通用参数
 	 * Return {@code true} if this type contains generic parameters.
 	 * @see #getGeneric(int...)
 	 * @see #getGenerics()
@@ -1392,6 +1400,7 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 返回由给定的{@link VariableResolver}支持的{@link Type}对应的{@link ResolvableType}
 	 * Return a {@link ResolvableType} for the specified {@link Type} backed by a given
 	 * {@link VariableResolver}.
 	 * @param type the source type or {@code null}
@@ -1411,11 +1420,13 @@ public class ResolvableType implements Serializable {
 
 		// For simple Class references, build the wrapper right away -
 		// no expensive resolution necessary, so not worth caching...
+		// 当是简单的Class引用时，会立即构建ResolvableType包装类，不需要
 		if (type instanceof Class) {
 			return new ResolvableType(type, typeProvider, variableResolver, (ResolvableType) null);
 		}
 
 		// Purge empty entries on access since we don't have a clean-up thread or the like.
+		// 由于ConcurrentReferenceHashMap没有清理线程，因此清楚访问时的空条目
 		cache.purgeUnreferencedEntries();
 
 		// Check the cache - we may have a ResolvableType which has been resolved before...
