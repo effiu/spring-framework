@@ -131,6 +131,8 @@ public abstract class AopProxyUtils {
 			}
 		}
 		boolean addSpringProxy = !advised.isInterfaceProxied(SpringProxy.class);
+		// opaque是否防止该代理配置创建的代理被强制转换为{@link Advised}以查询代理状态
+		// isInterfaceProxied方法表示该advised是否实现Advised接口
 		boolean addAdvised = !advised.isOpaque() && !advised.isInterfaceProxied(Advised.class);
 		boolean addDecoratingProxy = (decoratingProxy && !advised.isInterfaceProxied(DecoratingProxy.class));
 		int nonUserIfcCount = 0;

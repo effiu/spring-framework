@@ -23,6 +23,11 @@ import org.springframework.beans.PropertyValues;
 import org.springframework.lang.Nullable;
 
 /**
+ * {@link BeanPostProcessor}的子接口，其加入了实例化之前的回调，以及实例化之后设置显示属性或自动注入之前的回调
+ * 实例化之前的回调{@link #postProcessBeforeInstantiation(Class, String)}
+ * 实例化之后的回调{@link #postProcessAfterInstantiation(Object, String)}
+ * 设置显示属性或自动注入{@link #postProcessProperties(PropertyValues, Object, String)}
+ *
  * Subinterface of {@link BeanPostProcessor} that adds a before-instantiation callback,
  * and a callback after instantiation but before explicit properties are set or
  * autowiring occurs.
@@ -47,18 +52,26 @@ import org.springframework.lang.Nullable;
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**
-	 * 其会在目标对象被实例化之前调用(第一次调用后置处理器), 因为此时目标对象未被实例化，所以可以返回自定义对象，比如目标对象的代理对象
-	 *
+	 * 其会在目标对象被实例化之前调用(第一次调用后置处理器), 返回的bean对象可以是代替目标bean使用的代理，从而
+	 * 有效地抑制了目标bean的默认实例化。
 	 * Apply this BeanPostProcessor <i>before the target bean gets instantiated</i>.
 	 * The returned bean object may be a proxy to use instead of the target bean,
 	 * effectively suppressing default instantiation of the target bean.
+	 *
+	 * 若该方法返回非null对象，该bean的创建过程将会被短路。唯一应用的进一步处理是来自自己配置的
+	 * {@link #postProcessAfterInitialization}回调。
 	 * <p>If a non-null object is returned by this method, the bean creation process
 	 * will be short-circuited. The only further processing applied is the
 	 * {@link #postProcessAfterInitialization} callback from the configured
 	 * {@link BeanPostProcessor BeanPostProcessors}.
+	 *
+	 * 该回调将会通过bean类被应用到bean的定义，以及工厂方法定义。
 	 * <p>This callback will be applied to bean definitions with their bean class,
 	 * as well as to factory-method definitions in which case the returned bean type
 	 * will be passed in here.
+	 *
+	 * 后置处理器也许实现扩展的{@link SmartInstantiationAwareBeanPostProcessor}接口，目的是
+	 * 推断该方法返回的bean对象的类型。
 	 * <p>Post-processors may implement the extended
 	 * {@link SmartInstantiationAwareBeanPostProcessor} interface in order
 	 * to predict the type of the bean object that they are going to return here.
@@ -78,7 +91,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	}
 
 	/**
-	 * 在Bean实例化完成之后判断是否需要属性注入，false则不会完成属性注入
+	 * 在Bean实例化完成之后判断是否需要属性注入，false则不会完成属性注入。
+	 * 通过构造方法或者工厂方法实例化bean之后，但是在属性填充之前执行的操作。
 	 * Perform operations after the bean has been instantiated, via a constructor or factory method,
 	 * but before Spring property population (from explicit properties or autowiring) occurs.
 	 * <p>This is the ideal callback for performing custom field injection on the given bean
@@ -98,6 +112,7 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	}
 
 	/**
+	 * 在工厂将给定属性值应用于给定bean之前，对给定属性值的后置处理，不需要任何属性描述符。
 	 * Post-process the given property values before the factory applies them
 	 * to the given bean, without any need for property descriptors.
 	 * <p>Implementations should return {@code null} (the default) if they provide a custom

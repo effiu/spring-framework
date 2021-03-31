@@ -46,6 +46,7 @@ import org.springframework.lang.Nullable;
 public abstract class ReflectionUtils {
 
 	/**
+	 * 预创建的MethodFilter，与未在{@code java.lang.Object}上声明的所有非桥接非合成方法匹配
 	 * Pre-built MethodFilter that matches all non-bridge non-synthetic methods
 	 * which are not declared on {@code java.lang.Object}.
 	 * @since 3.0.5
@@ -357,6 +358,7 @@ public abstract class ReflectionUtils {
 		// Keep backing up the inheritance hierarchy.
 		Method[] methods = getDeclaredMethods(clazz, false);
 		for (Method method : methods) {
+			// 非桥接方法、非合成方法
 			if (mf != null && !mf.matches(method)) {
 				continue;
 			}

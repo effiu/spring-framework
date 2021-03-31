@@ -244,6 +244,7 @@ public abstract class AopUtils {
 		}
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
 
+		// 是否存在匹配成功的方法
 		for (Class<?> clazz : classes) {
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 			for (Method method : methods) {
@@ -271,7 +272,9 @@ public abstract class AopUtils {
 	}
 
 	/**
+	 * 给定的advisor是否可以应用到给定的class中
 	 * Can the given advisor apply at all on the given class?
+	 * 这是一个重要的检查，因为其可以用于优化class的advisor
 	 * <p>This is an important test as it can be used to optimize out a advisor for a class.
 	 * This version also takes into account introductions (for IntroductionAwareMethodMatchers).
 	 * @param advisor the advisor to check
@@ -282,6 +285,7 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
 		if (advisor instanceof IntroductionAdvisor) {
+			// 判断是否匹配
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
 		else if (advisor instanceof PointcutAdvisor) {
@@ -295,6 +299,7 @@ public abstract class AopUtils {
 	}
 
 	/**
+	 * 判断{@code candidateAdvisors}列表是否可以应用于给定clazz
 	 * Determine the sublist of the {@code candidateAdvisors} list
 	 * that is applicable to the given class.
 	 * @param candidateAdvisors the Advisors to evaluate

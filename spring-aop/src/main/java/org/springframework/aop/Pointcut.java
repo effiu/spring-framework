@@ -49,6 +49,7 @@ public interface Pointcut {
 
 
 	/**
+	 * 始终匹配的通用Pointcut实例
 	 * Canonical Pointcut instance that always matches.
 	 */
 	Pointcut TRUE = TruePointcut.INSTANCE;

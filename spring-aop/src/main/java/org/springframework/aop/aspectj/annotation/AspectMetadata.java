@@ -67,7 +67,8 @@ public class AspectMetadata implements Serializable {
 	private transient AjType<?> ajType;
 
 	/**
-	 * Spring AOP切入点
+	 * 与切面子句相对应的Spring AOP切入点，若是单例，则是Pointcut.TRUE规范实例，
+	 * 否则将是AspectJExpressionPointcut
 	 * Spring AOP pointcut corresponding to the per clause of the
 	 * aspect. Will be the Pointcut.TRUE canonical instance in the
 	 * case of a singleton, otherwise an AspectJExpressionPointcut.
@@ -85,9 +86,12 @@ public class AspectMetadata implements Serializable {
 
 		Class<?> currClass = aspectClass;
 		AjType<?> ajType = null;
-		//TODO while循环的意义
+		// 查找切面类(可能是父类方法)
 		while (currClass != Object.class) {
+			// 返回指定Java类型的AspectJ运行时类型表示形式。AjType可以理解PointCut、Advice、declare statements和
+			// 其他AspectJ信息。AjType是AspectJ推荐的反射API，其不仅支持java.lang.reflect的所有功能，还具有AspectJ的功能。
 			AjType<?> ajTypeToCheck = AjTypeSystem.getAjType(currClass);
+			// 是否使用@Aspect注解
 			if (ajTypeToCheck.isAspect()) {
 				ajType = ajTypeToCheck;
 				break;
@@ -97,12 +101,15 @@ public class AspectMetadata implements Serializable {
 		if (ajType == null) {
 			throw new IllegalArgumentException("Class '" + aspectClass.getName() + "' is not an @AspectJ aspect");
 		}
+		// @DeclarePrecedence注解是用来表示AspectJ织入顺序的注解，可以用来修饰类、方法。
+		// 该方法会检查类、方法、父类、父类方法上是否存在该注解。
+		// 这里抛出异常，表示不支持该注解，即不支持AspectJ
 		if (ajType.getDeclarePrecedence().length > 0) {
 			throw new IllegalArgumentException("DeclarePrecedence not presently supported in Spring AOP");
 		}
 		this.aspectClass = ajType.getJavaClass();
 		this.ajType = ajType;
-
+		// AspectJ支持不同的子句(切面实例化模型)，这里是SpringAOP支持的部分
 		switch (this.ajType.getPerClause().getKind()) {
 			case SINGLETON:
 				this.perClausePointcut = Pointcut.TRUE;

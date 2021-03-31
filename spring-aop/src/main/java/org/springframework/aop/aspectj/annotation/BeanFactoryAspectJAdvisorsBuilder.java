@@ -101,13 +101,16 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						if (beanType == null) {
 							continue;
 						}
-						// 判断是否存在@Aspect注解,即切面类
+						// 判断是否存在@Aspect注解且非ajc织入类,即切面类
 						if (this.advisorFactory.isAspect(beanType)) {
+							// 缓存切面
 							aspectNames.add(beanName);
+							// 切面元数据, 其内部会判断是否是Spring AOP支持的切面
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								// 确认所有的Advice
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);

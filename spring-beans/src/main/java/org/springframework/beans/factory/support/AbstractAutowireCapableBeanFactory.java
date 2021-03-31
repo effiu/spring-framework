@@ -581,7 +581,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.postProcessed) {
 				try {
 					// 第三次调用后置处理器，通过后置处理器合并BeanDefinition,拿到所有需要注入的属性
-					// ApplicationListenerDetector: 将属于ApplicationListener的Bean放入到ApplicationContext上下文的applicationListener集合中
+					// ApplicationListenerDetector: 将属于ApplicationListener的Bean放入到ApplicationContext
+					// 上下文的applicationListener集合中
 					// CommonAnnotationBeanPostProcessor: 将@Resource、@WebServiceRef、@EJB修饰的属性放入到RootBeanDefinition中
 					// AutowiredAnnotationBeanPostProcessor: 将@Autowired、@Value、JSR-330相关注解放入到RootBeanDefinition中
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
@@ -595,7 +596,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
-		// 判断是否支持单例的循环依赖
+		// 判断是否支持提前暴露bean
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
 				isSingletonCurrentlyInCreation(beanName));
 		// 若支持循环依赖则将bean提前暴露
@@ -604,7 +605,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
-			// 当支持循环依赖时，就会提前暴露自己(为了其他对象可以注入自己)，第四次调用后置处理器
+			// 当支持循环依赖且发生循环依赖时，就会提前暴露自己(为了其他对象可以注入自己)，第四次调用后置处理器
 			// AspectJAwareAdvisorAutoProxyCreator BeanPostProcessor会将其包装为一个代理类
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
@@ -650,14 +651,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 								"Bean with name '" + beanName + "' has been injected into other beans [" +
 										StringUtils.collectionToCommaDelimitedString(actualDependentBeans) +
 										"] in its raw version as part of a circular reference, but has eventually " +
-										"been" +
+										"been wrapped. This means that said other beans do not use the final version" +
 										" " +
-										"wrapped. This means that said other beans do not use the final version of " +
-										"the" +
+										"of the bean. This is often the result of over-eager type matching - consider" +
 										" " +
-										"bean. This is often the result of over-eager type matching - consider using" +
-										" " +
-										"'getBeanNamesForType' with the 'allowEagerInit' flag turned off, for " +
+										"using 'getBeanNamesForType' with the 'allowEagerInit' flag turned off, for " +
 										"example" +
 										".");
 					}
@@ -1429,7 +1427,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// state of the bean before properties are set. This can be used, for example,
 		// to support styles of field injection.
 		// 任何实现postProcessAfterInstantiation的BeanPostProcessor都可以修改postProcessAfterInstantiation的返回值
-		// 第五次调用后置处理器，判断是否需要属性注入,CommonAnnotationBeanPostProcessor、AutowiredAnnotationBeanPostProcessor、ImportAwareBeanPostProcessor都默认为true
+		// 第五次调用后置处理器，判断是否需要属性注入,CommonAnnotationBeanPostProcessor、AutowiredAnnotationBeanPostProcessor
+		// 、ImportAwareBeanPostProcessor都默认为true
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1843,7 +1842,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
 			// 第七次调用后置处理器
-			// 1.ApplicationContextAwareProcessor: 执行EnvironmentAware、EmbeddedValueResolverAware、ResourceLoaderAware、ApplicationEventPublisherAware、MessageSourceAware、ApplicationContextAware相关回调
+			// 1.ApplicationContextAwareProcessor: 执行EnvironmentAware、EmbeddedValueResolverAware、ResourceLoaderAware
+			// 、ApplicationEventPublisherAware、MessageSourceAware、ApplicationContextAware相关回调
 			// 2.ImportAwareBeanPostProcessor: 实现ImportAware接口的Bean
 			// 3.BeanPostProcessorChecker:没有做任何事情
 			// 4.CommonAnnotationBeanPostProcessor继承自CommonAnnotationBeanPostProcessor, 执行带@PostConstract注解的方法

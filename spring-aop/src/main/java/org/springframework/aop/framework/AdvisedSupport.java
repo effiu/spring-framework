@@ -43,6 +43,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
+ * AOP代理配置管理器的基类。
+ * 这不是AOP代理本身，但是该类的子类通常是工厂，可以从这些工厂直接获得AOP代理实例
  * Base class for AOP proxy configuration managers.
  * These are not themselves AOP proxies, but subclasses of this class are
  * normally factories from which AOP proxy instances are obtained directly.

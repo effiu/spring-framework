@@ -86,6 +86,7 @@ public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProx
 	}
 
 	/**
+	 * 将{@link ExposeInvocationInterceptor}添加到代理链头部
 	 * Adds an {@link ExposeInvocationInterceptor} to the beginning of the advice chain.
 	 * These additional advices are needed when using AspectJ expression pointcuts
 	 * and when using AspectJ-style advice.
@@ -96,8 +97,6 @@ public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProx
 	}
 
 	/**
-	 * 其内部逻辑是先在BeanFactory中查找所有Type为Advisor.class的BeanName，然后从BeanFactory中找到对应的
-	 * Bean(List\<Advisor\>)，遍历该集合，判断是否存在匹配该beanName的Advisor，存在则说明该类是Advisor
 	 * @param beanClass the class of the bean
 	 * @param beanName the name of the bean
 	 * @return

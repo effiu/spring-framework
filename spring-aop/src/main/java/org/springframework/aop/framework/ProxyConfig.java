@@ -42,7 +42,7 @@ public class ProxyConfig implements Serializable {
 	private boolean optimize = false;
 
 	/**
-	 * 是否防止由该代理配置创建的代理被强制转换为{@link Advised}以查下代理状态
+	 * 是否防止由该代理配置创建的代理被强制转换为{@link Advised}以查询代理状态
 	 */
 	boolean opaque = false;
 
@@ -75,6 +75,7 @@ public class ProxyConfig implements Serializable {
 	}
 
 	/**
+	 * 返回直接代理目标类以及还是接口
 	 * Return whether to proxy the target class directly as well as any interfaces.
 	 */
 	public boolean isProxyTargetClass() {

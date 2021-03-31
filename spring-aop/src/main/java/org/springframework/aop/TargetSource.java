@@ -19,14 +19,18 @@ package org.springframework.aop;
 import org.springframework.lang.Nullable;
 
 /**
+ * {@code TargetSource}用于获取AOP调用的当前目标
  * A {@code TargetSource} is used to obtain the current "target" of
  * an AOP invocation, which will be invoked via reflection if no around
  * advice chooses to end the interceptor chain itself.
  *
+ * 若{@code TargetSource}是静态类，其将永远返回相同的target，从而允许在AOP中进行优化。
+ * 动态targetSource支持池化、热部署等
  * <p>If a {@code TargetSource} is "static", it will always return
  * the same target, allowing optimizations in the AOP framework. Dynamic
  * target sources can support pooling, hot swapping, etc.
  *
+ * 应用开发者通常不需要直接使用{@code TargetSources}，这是一个AOP框架的内部接口。
  * <p>Application developers don't usually need to work with
  * {@code TargetSources} directly: this is an AOP framework interface.
  *

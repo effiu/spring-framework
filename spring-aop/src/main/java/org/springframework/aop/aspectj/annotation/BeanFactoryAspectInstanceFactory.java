@@ -27,6 +27,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 由{@link org.springframework.beans.factory.BeanFactory}支持的
+ * {@link org.springframework.aop.aspectj.AspectInstanceFactory}的实现类
  * {@link org.springframework.aop.aspectj.AspectInstanceFactory} implementation
  * backed by a Spring {@link org.springframework.beans.factory.BeanFactory}.
  *

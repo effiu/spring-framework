@@ -80,7 +80,7 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * 这个回调后置处理器提供了一个在目标bean实例被完全初始化之前提前暴露包装类的机会。
 	 * 暴露类等于{@link #postProcessBeforeInitialization}/{@link #postProcessAfterInitialization}
 	 * 注意，除非后置处理器返回一个不同的包装类，否则该方法返回的包装对象将会被作为bean引用，即这些后置处理器
-	 * 回调最终暴露相同的引用，或者后续回调汇总返回原始的bean实例
+	 * 回调最终暴露相同的引用，或者后续回调总返回原始的bean实例
 	 * <p>This callback gives post-processors a chance to expose a wrapper
 	 * early - that is, before the target bean instance is fully initialized.
 	 * The exposed object should be equivalent to the what
