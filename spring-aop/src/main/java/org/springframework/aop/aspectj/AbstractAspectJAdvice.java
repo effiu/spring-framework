@@ -399,7 +399,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 				maybeBindJoinPointStaticPart(parameterTypes[0])) {
 			numUnboundArgs--;
 		}
-		// 若仍存在其他参数，那么需要根据切入点匹配返回的名称绑定参数 
+		// 若仍存在其他参数，那么需要根据切入点匹配返回的名称绑定参数
 		if (numUnboundArgs > 0) {
 			// need to bind arguments by name as returned from the pointcut match
 			bindArgumentsByName(numUnboundArgs);
@@ -653,6 +653,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 		try {
 			ReflectionUtils.makeAccessible(this.aspectJAdviceMethod);
 			// TODO AopUtils.invokeJoinpointUsingReflection
+			// method.invoke方法
 			return this.aspectJAdviceMethod.invoke(this.aspectInstanceFactory.getAspectInstance(), actualArgs);
 		}
 		catch (IllegalArgumentException ex) {
