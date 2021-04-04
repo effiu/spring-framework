@@ -103,12 +103,13 @@ public abstract class AopProxyUtils {
 	}
 
 	/**
+	 * 确定用于代理给定的AOP配置的完整接口集合
 	 * Determine the complete set of interfaces to proxy for the given AOP configuration.
 	 * <p>This will always add the {@link Advised} interface unless the AdvisedSupport's
 	 * {@link AdvisedSupport#setOpaque "opaque"} flag is on. Always adds the
 	 * {@link org.springframework.aop.SpringProxy} marker interface.
 	 * @param advised the proxy config
-	 * @param decoratingProxy whether to expose the {@link DecoratingProxy} interface
+	 * @param decoratingProxy whether to expose the {@link DecoratingProxy} interface 是否公开{@link DecoratingProxy}接口
 	 * @return the complete set of interfaces to proxy
 	 * @since 4.3
 	 * @see SpringProxy
@@ -116,24 +117,29 @@ public abstract class AopProxyUtils {
 	 * @see DecoratingProxy
 	 */
 	static Class<?>[] completeProxiedInterfaces(AdvisedSupport advised, boolean decoratingProxy) {
+		// 可以代理的接口
 		Class<?>[] specifiedInterfaces = advised.getProxiedInterfaces();
 		if (specifiedInterfaces.length == 0) {
 			// No user-specified interfaces: check whether target class is an interface.
+			// 当没有可以代理的接口时，检查目标class是否是接口
 			Class<?> targetClass = advised.getTargetClass();
 			if (targetClass != null) {
 				if (targetClass.isInterface()) {
 					advised.setInterfaces(targetClass);
 				}
+				// 当且仅当targetClass是使用{@code getProxyClass}方法或者{@code newProxyInstance}方法
+				// 将指定的类动态生成为代理类时，才返回true，此时或者代理类实现的接口就是要代理的接口
 				else if (Proxy.isProxyClass(targetClass)) {
 					advised.setInterfaces(targetClass.getInterfaces());
 				}
 				specifiedInterfaces = advised.getProxiedInterfaces();
 			}
 		}
+		// SpringAopProxy是一个标记接口，用于判断是否是Spring生成的代理，这里addSpringProxy=true表示没有实现该接口
 		boolean addSpringProxy = !advised.isInterfaceProxied(SpringProxy.class);
-		// opaque是否防止该代理配置创建的代理被强制转换为{@link Advised}以查询代理状态
-		// isInterfaceProxied方法表示该advised是否实现Advised接口
+		// opaque是否防止该代理配置创建的代理被强制转换为{@link Advised}以查询代理状态，是否实现了Advised接口
 		boolean addAdvised = !advised.isOpaque() && !advised.isInterfaceProxied(Advised.class);
+		//
 		boolean addDecoratingProxy = (decoratingProxy && !advised.isInterfaceProxied(DecoratingProxy.class));
 		int nonUserIfcCount = 0;
 		if (addSpringProxy) {
@@ -145,18 +151,22 @@ public abstract class AopProxyUtils {
 		if (addDecoratingProxy) {
 			nonUserIfcCount++;
 		}
+		// 记录代理接口的个数
 		Class<?>[] proxiedInterfaces = new Class<?>[specifiedInterfaces.length + nonUserIfcCount];
 		System.arraycopy(specifiedInterfaces, 0, proxiedInterfaces, 0, specifiedInterfaces.length);
 		int index = specifiedInterfaces.length;
 		if (addSpringProxy) {
+			// 将SpringProxy加入到代理接口中去
 			proxiedInterfaces[index] = SpringProxy.class;
 			index++;
 		}
 		if (addAdvised) {
+			// 将Advised加入到代理接口中去
 			proxiedInterfaces[index] = Advised.class;
 			index++;
 		}
 		if (addDecoratingProxy) {
+			// 将DecoratingProxy加入到代理接口中去
 			proxiedInterfaces[index] = DecoratingProxy.class;
 		}
 		return proxiedInterfaces;

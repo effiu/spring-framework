@@ -331,6 +331,7 @@ public abstract class AopUtils {
 	}
 
 	/**
+	 * 作为AOP方法调用的一部分，通过反射调用给定对象
 	 * Invoke the given target via reflection, as part of an AOP method invocation.
 	 * @param target the target object
 	 * @param method the method to invoke

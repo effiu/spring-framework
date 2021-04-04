@@ -21,9 +21,10 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.lang.Nullable;
 
 /**
+ * AOP联盟{@link org.aopalliance.intercept.MethodInvocation}接口的扩展，允许通过方法调用以访问代理
  * Extension of the AOP Alliance {@link org.aopalliance.intercept.MethodInvocation}
  * interface, allowing access to the proxy that the method invocation was made through.
- *
+ * 必要时，能够用代理替换返回值很有用。
  * <p>Useful to be able to substitute return values with the proxy,
  * if necessary, for example if the invocation target returned itself.
  *
@@ -36,12 +37,15 @@ import org.springframework.lang.Nullable;
 public interface ProxyMethodInvocation extends MethodInvocation {
 
 	/**
+	 * 返回该方法调用的代理
 	 * Return the proxy that this method invocation was made through.
 	 * @return the original proxy object
 	 */
 	Object getProxy();
 
 	/**
+	 * 创建该对象的副本。若该对象的副本在{@code proceed()}被调用之前完成，每个副本
+	 * 可以调用一次{@code proceed()}。
 	 * Create a clone of this object. If cloning is done before {@code proceed()}
 	 * is invoked on this object, {@code proceed()} can be invoked once per clone
 	 * to invoke the joinpoint (and the rest of the advice chain) more than once.

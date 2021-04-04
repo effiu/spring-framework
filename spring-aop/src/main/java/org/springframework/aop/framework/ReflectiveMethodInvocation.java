@@ -36,6 +36,7 @@ import org.springframework.lang.Nullable;
  * implementing the extended
  * {@link org.springframework.aop.ProxyMethodInvocation} interface.
  *
+ * 使用反射调用目标对象。子类可以通过重写{@link #invokeJoinpoint()}方法改变该行为，
  * <p>Invokes the target object using reflection. Subclasses can override the
  * {@link #invokeJoinpoint()} method to change this behavior, so this is also
  * a useful base class for more specialized MethodInvocation implementations.
@@ -86,6 +87,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	protected final List<?> interceptorsAndDynamicMethodMatchers;
 
 	/**
+	 * 正在调用的当前拦截器从0开始的索引。
 	 * Index from 0 of the current interceptor we're invoking.
 	 * -1 until we invoke: then the current interceptor.
 	 */
@@ -159,10 +161,10 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	@Nullable
 	public Object proceed() throws Throwable {
 		// We start with an index of -1 and increment early.
+		// 当前代理链中的索引，相等表示是代理链中的最后一个，此时应该是通过反射调用目标对象
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
 			return invokeJoinpoint();
 		}
-
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
@@ -171,6 +173,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			InterceptorAndDynamicMethodMatcher dm =
 					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			Class<?> targetClass = (this.targetClass != null ? this.targetClass : this.method.getDeclaringClass());
+			// 再次确认是否匹配成功，成功才调用，否则通过递归执行代理链中的下一个
 			if (dm.methodMatcher.matches(this.method, targetClass, this.arguments)) {
 				return dm.interceptor.invoke(this);
 			}

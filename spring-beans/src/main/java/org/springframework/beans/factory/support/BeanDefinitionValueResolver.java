@@ -46,6 +46,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 用于bean工厂实现的Helper类，其将bean定义对象中包含的值解析为应用于目标bean实例的实际值
  * Helper class for use in bean factory implementations,
  * resolving values contained in bean definition objects
  * into the actual values applied to the target bean instance.

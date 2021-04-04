@@ -367,10 +367,17 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 	/**
 	 * Do as much work as we can as part of the set-up so that argument binding
 	 * on subsequent advice invocations can be as fast as possible.
+	 *
+	 * 若第一个参数是JoinPoint或者ProceedingJoinPoint，那么我们将传递一个JoinPoint(ProceedingJoinPoint用于Around advice)
 	 * <p>If the first argument is of type JoinPoint or ProceedingJoinPoint then we
 	 * pass a JoinPoint in that position (ProceedingJoinPoint for around advice).
+	 *
+	 * 若第一个参数是{@code JoinPoint.StaticPart}类型，那么我们将传递一个{@code JoinPoint.StaticPart}。
 	 * <p>If the first argument is of type {@code JoinPoint.StaticPart}
 	 * then we pass a {@code JoinPoint.StaticPart} in that position.
+	 *
+	 * 剩下的参数必需由给定的连接点处的切入点约束。我们将会得到一个从参数名称到值的映射。
+	 * 我们需要计算哪个advice需要绑定到哪个参数名称。有多种绑定策略，这些策略在ChainOfResponsibility责任链中。
 	 * <p>Remaining arguments have to be bound by pointcut evaluation at
 	 * a given join point. We will get back a map from argument name to
 	 * value. We need to calculate which advice parameter needs to be bound
@@ -379,17 +386,20 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 	 */
 	public final synchronized void calculateArgumentBindings() {
 		// The simple case... nothing to bind.
+		// 最简单的情况是不需要绑定参数
 		if (this.argumentsIntrospected || this.parameterTypes.length == 0) {
 			return;
 		}
-
+		// 参数列表的长度
 		int numUnboundArgs = this.parameterTypes.length;
+		// 参数列表的类型数组
 		Class<?>[] parameterTypes = this.aspectJAdviceMethod.getParameterTypes();
+		// 第一个参数可以是JoinPoint、ProceedingJoinPoint、JoinPoint.StaticPart类型
 		if (maybeBindJoinPoint(parameterTypes[0]) || maybeBindProceedingJoinPoint(parameterTypes[0]) ||
 				maybeBindJoinPointStaticPart(parameterTypes[0])) {
 			numUnboundArgs--;
 		}
-
+		// 若仍存在其他参数，那么需要根据切入点匹配返回的名称绑定参数
 		if (numUnboundArgs > 0) {
 			// need to bind arguments by name as returned from the pointcut match
 			bindArgumentsByName(numUnboundArgs);
@@ -437,6 +447,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 
 	private void bindArgumentsByName(int numArgumentsExpectingToBind) {
 		if (this.argumentNames == null) {
+			// ParameterNameDiscoverer包含，返回类型，抛出异常类型
 			this.argumentNames = createParameterNameDiscoverer().getParameterNames(this.aspectJAdviceMethod);
 		}
 		if (this.argumentNames != null) {
@@ -550,6 +561,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 	}
 
 	/**
+	 * 在方法执行连接点处获取参数，且将参数以集合的方式输出到advice方法上
 	 * Take the arguments at the method execution join point and output a set of arguments
 	 * to the advice method.
 	 * @param jp the current JoinPoint

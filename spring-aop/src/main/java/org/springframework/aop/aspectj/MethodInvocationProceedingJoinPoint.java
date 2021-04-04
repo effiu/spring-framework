@@ -33,6 +33,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ *
  * An implementation of the AspectJ {@link ProceedingJoinPoint} interface
  * wrapping an AOP Alliance {@link org.aopalliance.intercept.MethodInvocation}.
  *
@@ -97,6 +98,10 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 					"but was passed " + arguments.length + " arguments");
 		}
 		this.methodInvocation.setArguments(arguments);
+		/**
+		 * 调用{@link org.springframework.aop.framework.ReflectiveMethodInvocation#proceed()}
+		 * 完成代理链的传递调用
+		 */
 		return this.methodInvocation.invocableClone(arguments).proceed();
 	}
 

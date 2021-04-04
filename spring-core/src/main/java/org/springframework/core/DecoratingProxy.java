@@ -17,9 +17,12 @@
 package org.springframework.core;
 
 /**
+ * 通过装饰代理实现的接口。
  * Interface to be implemented by decorating proxies, in particular Spring AOP
  * proxies but potentially also custom proxies with decorator semantics.
  *
+ * 注意：仅当装饰类不在代理类的层次结构内时实现该接口。特别是，Spring AOP CGLIB代理等
+ * 目标类代理不应该实现它，因为目标类的任何查找都可以在该代理类上简单的执行。
  * <p>Note that this interface should just be implemented if the decorated class
  * is not within the hierarchy of the proxy class to begin with. In particular,
  * a "target-class" proxy such as a Spring AOP CGLIB proxy should not implement
