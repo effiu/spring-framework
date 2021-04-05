@@ -25,7 +25,9 @@ import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.util.Assert;
 
 /**
+ * 包装了JDBC{@link Connection}的Resource。
  * Resource holder wrapping a JDBC {@link Connection}.
+ * @link DataSourceTransactionManager}将该类的实例绑定到线程，以用于特定的DataSource。
  * {@link DataSourceTransactionManager} binds instances of this class
  * to the thread, for a specific {@link javax.sql.DataSource}.
  *

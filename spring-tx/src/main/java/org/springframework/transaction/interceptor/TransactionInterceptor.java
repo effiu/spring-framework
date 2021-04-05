@@ -32,11 +32,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 /**
+ * AOP联盟的MethodInterceptor，用于使用通用Spring事务基础结构进行声明式事务管理。
  * AOP Alliance MethodInterceptor for declarative transaction
  * management using the common Spring transaction infrastructure
  * ({@link org.springframework.transaction.PlatformTransactionManager}/
  * {@link org.springframework.transaction.ReactiveTransactionManager}).
  *
+ * 派生自{@link TransactionAspectSupport}的类，其包含与Spring的基础事务API的集成。
+ * TransactionInterceptor只需要按照正确的顺序调用相关的超类方法，例如：{@link #invokeWithinTransaction}
  * <p>Derives from the {@link TransactionAspectSupport} class which
  * contains the integration with Spring's underlying transaction API.
  * TransactionInterceptor simply calls the relevant superclass methods

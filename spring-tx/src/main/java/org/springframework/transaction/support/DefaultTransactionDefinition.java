@@ -238,6 +238,7 @@ public class DefaultTransactionDefinition implements TransactionDefinition, Seri
 	}
 
 	/**
+	 * 该事务的名称，默认为none。这将会作为在事务监督器中展示的事务名称。
 	 * Set the name of this transaction. Default is none.
 	 * <p>This will be used as transaction name to be shown in a
 	 * transaction monitor, if applicable (for example, WebLogic's).

@@ -102,6 +102,7 @@ public class AnnotationTransactionAttributeSource extends AbstractFallbackTransa
 			}
 		}
 		else {
+			// 指定SpringTransactionAnnotationParser，用于解析@Transactional为TransactionAttribute
 			this.annotationParsers = Collections.singleton(new SpringTransactionAnnotationParser());
 		}
 	}

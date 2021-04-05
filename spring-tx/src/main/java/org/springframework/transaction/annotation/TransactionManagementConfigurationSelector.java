@@ -23,6 +23,8 @@ import org.springframework.transaction.config.TransactionManagementConfigUtils;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 根据导入{@code @Configuration}类上的{@link EnableTransactionManagement#mode}的值，
+ * 选择应该选择哪种实现方式{@link AbstractTransactionManagementConfiguration}。
  * Selects which implementation of {@link AbstractTransactionManagementConfiguration}
  * should be used based on the value of {@link EnableTransactionManagement#mode} on the
  * importing {@code @Configuration} class.
@@ -38,10 +40,10 @@ import org.springframework.util.ClassUtils;
 public class TransactionManagementConfigurationSelector extends AdviceModeImportSelector<EnableTransactionManagement> {
 
 	/**
-	 * Spring通过{@link ProxyTransactionManagementConfiguration}是
-	 *
-	 *
 	 * 根据{@link EnableTransactionManagement#mode()}返回被导入的类的名称。
+	 *
+	 * {@link ProxyTransactionManagementConfiguration}会注册事务管理所需要的bean
+	 *
 	 * Returns {@link ProxyTransactionManagementConfiguration} or
 	 * {@code AspectJ(Jta)TransactionManagementConfiguration} for {@code PROXY}
 	 * and {@code ASPECTJ} values of {@link EnableTransactionManagement#mode()},

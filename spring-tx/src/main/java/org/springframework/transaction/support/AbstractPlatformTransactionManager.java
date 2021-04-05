@@ -330,6 +330,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	//---------------------------------------------------------------------
 
 	/**
+	 * 该实现处理传播行为，代表{@code doGetTransaction}、{@code isExistingTransaction}和{@code doBegin}。
 	 * This implementation handles propagation behavior. Delegates to
 	 * {@code doGetTransaction}, {@code isExistingTransaction}
 	 * and {@code doBegin}.
@@ -342,26 +343,31 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			throws TransactionException {
 
 		// Use defaults if no transaction definition given.
+		// 若没有定义事务(未开启事务)，则使用默认的事务实例。
 		TransactionDefinition def = (definition != null ? definition : TransactionDefinition.withDefaults());
-
+		// 一般是org.springframework.jdbc.datasource.DataSourceTransactionManager.doGetTransaction，获得事务对象。
 		Object transaction = doGetTransaction();
 		boolean debugEnabled = logger.isDebugEnabled();
-
+		// 判断是否存在事务，第一次是不存在的
 		if (isExistingTransaction(transaction)) {
 			// Existing transaction found -> check propagation behavior to find out how to behave.
+			// 若存在事务，则确认传播行为
 			return handleExistingTransaction(def, transaction, debugEnabled);
 		}
 
 		// Check definition settings for new transaction.
+		// 为新事务检查@Transactional的属性值
 		if (def.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
 			throw new InvalidTimeoutException("Invalid transaction timeout", def.getTimeout());
 		}
 
 		// No existing transaction found -> check propagation behavior to find out how to proceed.
+		// PROPAGATION_MANDATORY传播级别，抛出异常。
 		if (def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_MANDATORY) {
 			throw new IllegalTransactionStateException(
 					"No existing transaction found for transaction marked with propagation 'mandatory'");
 		}
+		// 创建新事务
 		else if (def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
@@ -370,6 +376,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				logger.debug("Creating new transaction with name [" + def.getName() + "]: " + def);
 			}
 			try {
+				// 开启事务
 				return startTransaction(def, transaction, debugEnabled, suspendedResources);
 			}
 			catch (RuntimeException | Error ex) {
@@ -389,6 +396,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	}
 
 	/**
+	 * 开启新事务
 	 * Start a new transaction.
 	 */
 	private TransactionStatus startTransaction(TransactionDefinition definition, Object transaction,
@@ -403,6 +411,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	}
 
 	/**
+	 * 为现有事务创建一个TransactionStatus。
 	 * Create a TransactionStatus for an existing transaction.
 	 */
 	private TransactionStatus handleExistingTransaction(
@@ -555,6 +564,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 
 
 	/**
+	 * 暂停给定的事务，首先挂起事务同步，然后再委派到{@code doSuspend}模板方法。
 	 * Suspend the given transaction. Suspends transaction synchronization first,
 	 * then delegates to the {@code doSuspend} template method.
 	 * @param transaction the current transaction object

@@ -19,6 +19,7 @@ package org.springframework.aop.aspectj;
 import org.springframework.aop.PointcutAdvisor;
 
 /**
+ * 由Spring AOP advisors实现的接口，其中包装了具有延迟初始化的AspectJ切面。
  * Interface to be implemented by Spring AOP Advisors wrapping AspectJ
  * aspects that may have a lazy initialization strategy. For example,
  * a perThis instantiation model would mean lazy initialization of the advice.

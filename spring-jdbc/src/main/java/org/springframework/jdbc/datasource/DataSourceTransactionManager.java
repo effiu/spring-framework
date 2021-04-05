@@ -182,6 +182,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	}
 
 	/**
+	 * 获取直接使用的DataSource
 	 * Obtain the DataSource for actual use.
 	 * @return the DataSource (never {@code null})
 	 * @throws IllegalStateException in case of no DataSource set
@@ -240,8 +241,10 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 
 	@Override
 	protected Object doGetTransaction() {
+		// 创建事务对象
 		DataSourceTransactionObject txObject = new DataSourceTransactionObject();
 		txObject.setSavepointAllowed(isNestedTransactionAllowed());
+		// java.sql.Connection的包装类
 		ConnectionHolder conHolder =
 				(ConnectionHolder) TransactionSynchronizationManager.getResource(obtainDataSource());
 		txObject.setConnectionHolder(conHolder, false);
@@ -251,10 +254,12 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	@Override
 	protected boolean isExistingTransaction(Object transaction) {
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
+		// transactionActive默认为false
 		return (txObject.hasConnectionHolder() && txObject.getConnectionHolder().isTransactionActive());
 	}
 
 	/**
+	 * 该实现设置隔离级别，但是忽略超时时间
 	 * This implementation sets the isolation level but ignores the timeout.
 	 */
 	@Override

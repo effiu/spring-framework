@@ -73,6 +73,7 @@ public interface TransactionDefinition {
 	int PROPAGATION_SUPPORTS = 1;
 
 	/**
+	 * 支持当前事务，若当前不存在事务则抛出异常
 	 * Support a current transaction; throw an exception if no current transaction
 	 * exists. Analogous to the EJB transaction attribute of the same name.
 	 * <p>Note that transaction synchronization within a {@code PROPAGATION_MANDATORY}
@@ -119,6 +120,7 @@ public interface TransactionDefinition {
 	int PROPAGATION_NEVER = 5;
 
 	/**
+	 * 若当前事务存在，则在嵌套事务中执行，否则等于{@link #PROPAGATION_REQUIRED}。
 	 * Execute within a nested transaction if a current transaction exists,
 	 * behave like {@link #PROPAGATION_REQUIRED} otherwise. There is no
 	 * analogous feature in EJB.
@@ -281,6 +283,7 @@ public interface TransactionDefinition {
 	// Static builder methods
 
 	/**
+	 * 返回一个不可修改的默认{@code TransactionDefinition}
 	 * Return an unmodifiable {@code TransactionDefinition} with defaults.
 	 * <p>For customization purposes, use the modifiable
 	 * {@link org.springframework.transaction.support.DefaultTransactionDefinition}

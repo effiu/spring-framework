@@ -60,6 +60,11 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 		return new AnnotationTransactionAttributeSource();
 	}
 
+	/**
+	 * 这是事务管理的切面
+	 * @param transactionAttributeSource
+	 * @return
+	 */
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public TransactionInterceptor transactionInterceptor(TransactionAttributeSource transactionAttributeSource) {
