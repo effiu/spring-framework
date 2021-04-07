@@ -355,6 +355,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		// If the transaction attribute is null, the method is non-transactional.
 		TransactionAttributeSource tas = getTransactionAttributeSource();
+		// 这里会对@Transactional注解的属性进行解析，value、rollbackFor、propagation、isolation、timeout等等
 		final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
 		// 根据@Transactional注解中的value或者transactionManager的值，判断使用哪个事务管理器
 		// 这里并不是使用transactionManager属性，因为可能是多数据源，而是根据txAttr指定的bean名称从BeanFactory中获取

@@ -41,8 +41,7 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 
 	/**
 	 * 根据{@link EnableTransactionManagement#mode()}返回被导入的类的名称。
-	 *
-	 * {@link ProxyTransactionManagementConfiguration}会注册事务管理所需要的bean
+	 * {@link ProxyTransactionManagementConfiguration}会注册事务管理所需要的bean。
 	 *
 	 * Returns {@link ProxyTransactionManagementConfiguration} or
 	 * {@code AspectJ(Jta)TransactionManagementConfiguration} for {@code PROXY}
