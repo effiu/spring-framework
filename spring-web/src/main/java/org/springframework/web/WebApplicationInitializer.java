@@ -16,14 +16,20 @@
 
 package org.springframework.web;
 
+import java.util.Set;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
+ * 在Servlet3.0以上的环境中实现的接口，便于以编程的方式配置{@link ServletContext}
+ * 这与传统的基于{@code web.xml}的方式相反。
  * Interface to be implemented in Servlet 3.0+ environments in order to configure the
  * {@link ServletContext} programmatically -- as opposed to (or possibly in conjunction
  * with) the traditional {@code web.xml}-based approach.
  *
+ * 该SPI实现将会被{@link SpringServletContainerInitializer}自动检测，最后会将所有实现类以集合的方法
+ * 传递到{@link SpringServletContainerInitializer#onStartup(Set, ServletContext)}的webAppInitializerClasses参数中。
  * <p>Implementations of this SPI will be detected automatically by {@link
  * SpringServletContainerInitializer}, which itself is bootstrapped automatically
  * by any Servlet 3.0 container. See {@linkplain SpringServletContainerInitializer its
@@ -70,6 +76,17 @@ import javax.servlet.ServletException;
  *    }
  *
  * }</pre>
+ *
+ * 上述方法中可以选择一个，也可以继承{@link org.springframework.web.servlet.support.AbstractDispatcherServletInitializer}.
+ * 正如你所看到的，由于Servlet 3.0，我们实际上正在注册{@code DispatcherServlet}实例。这意味着
+ * 我们可以{@code DispatcherServlet}视为任何其他对象，这种情况下可以接受应用程序上下文的构造方法注入。
+ * 这种方式既简单又简洁，不用担心处理init-params问题，只需要普通JavaBean样式的属性和构造参数即可。在将它们注入
+ * {@code DispatcherServlet}之前，可以自由的创建和使用Spring应用程序上下文。
+ * 大多数主要的Spring Web组件都已更新，以支持这种注册样式。 您会发现{@code DispatcherServlet}、
+ * {@code FrameworkServlet}、{@code ContextLoaderListener}和{@code DelegatingFilterProxy}
+ * 现在都支持构造函数参数。即使没有专门为{@code WebApplicationInitializers}中使用的组件（例如非Spring，其他第三方）进行更新，
+ * 也仍然可以在任何情况下使用它们。 Servlet 3.0 {@code ServletContext} API允许以编程方式设置init-params，context-params等。
+ * <p>
  *
  * As an alternative to the above, you can also extend from {@link
  * org.springframework.web.servlet.support.AbstractDispatcherServletInitializer}.
@@ -177,6 +194,7 @@ import javax.servlet.ServletException;
 public interface WebApplicationInitializer {
 
 	/**
+	 * 使用初始化此Web应用程序所需的所有Servlet，过滤器，侦听器上下文参数和属性来配置给定的{@link ServletContext}。
 	 * Configure the given {@link ServletContext} with any servlets, filters, listeners
 	 * context-params and attributes necessary for initializing this web application. See
 	 * examples {@linkplain WebApplicationInitializer above}.
