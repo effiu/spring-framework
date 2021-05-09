@@ -108,6 +108,8 @@ import org.springframework.util.ReflectionUtils;
  * {@code WebApplicationInitializer} types are detected, this container initializer will
  * have no effect.
  *
+ * {@code WebApplicationInitializer}具有通用性，其可以促进{@code ServletContext}的基于代码的便捷配置,
+ * 任何Servlet、过滤器、侦听器都可以在{@code WebApplicationInitializer}注册，不仅仅是SpringMVC的特定组件
  * <p>Note that use of this container initializer and of {@code WebApplicationInitializer}
  * is not in any way "tied" to Spring MVC other than the fact that the types are shipped
  * in the {@code spring-web} module JAR. Rather, they can be considered general-purpose
