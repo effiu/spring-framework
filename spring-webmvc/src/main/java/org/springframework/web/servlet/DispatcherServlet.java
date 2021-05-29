@@ -66,10 +66,14 @@ import org.springframework.web.util.NestedServletException;
 import org.springframework.web.util.WebUtils;
 
 /**
+ * HTTP请求处理程序/控制器的中央调度程序。例如，用于web UI控制器或者基于远程HTTP服务响应器。
+ * 转发到已注册的处理器以处理web请求，提供方便的映射和异常处理功能。
  * Central dispatcher for HTTP request handlers/controllers, e.g. for web UI controllers
  * or HTTP-based remote service exporters. Dispatches to registered handlers for processing
  * a web request, providing convenient mapping and exception handling facilities.
  *
+ * 该Servlet是非常灵活的。在安装合适的适配类后，它可以用于任何工作流程。其提供下面的功能，使其区分于
+ * 其他的请求驱动的Web MVC框架。
  * <p>This servlet is very flexible: It can be used with just about any workflow, with the
  * installation of the appropriate adapter classes. It offers the following functionality
  * that distinguishes it from other request-driven web MVC frameworks:
@@ -77,6 +81,9 @@ import org.springframework.web.util.WebUtils;
  * <ul>
  * <li>It is based around a JavaBeans configuration mechanism.
  *
+ * 可以使用任何{@link HandlerMapping}实现(预先构建或者作为应用程序的一部分)控制将请求路由到处理程序对象。
+ * 默认有两个{@link HandlerMapping}。可以在Servlet的应用程序上下文中将HandlerMapping对象定义为bean，
+ * 实现HandlerMapping接口，并覆盖默认的HandlerMapping。
  * <li>It can use any {@link HandlerMapping} implementation - pre-built or provided as part
  * of an application - to control the routing of requests to handler objects. Default is
  * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping} and
@@ -85,6 +92,9 @@ import org.springframework.web.util.WebUtils;
  * implementing the HandlerMapping interface, overriding the default HandlerMapping if
  * present. HandlerMappings can be given any bean name (they are tested by type).
  *
+ * 它可以使用任何{@link HandlerAdapter}，这允许使用任何处理程序接口。默认的adapters如下。
+ * 默认的{@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter}
+ * 将会被注册。在应用程序上下文中，HandlerAdapter对象可以作为bean被注册，覆盖默认的HandlerAdapters。
  * <li>It can use any {@link HandlerAdapter}; this allows for using any handler interface.
  * Default adapters are {@link org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter},
  * {@link org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter}, for Spring's
@@ -95,6 +105,8 @@ import org.springframework.web.util.WebUtils;
  * application context, overriding the default HandlerAdapters. Like HandlerMappings,
  * HandlerAdapters can be given any bean name (they are tested by type).
  *
+ * Dispatcher的异常解决策略可以通过{@link HandlerExceptionResolver}指定。例如将某些异常映射到错误页面。
+ * 这些HandlerExceptionResolvers可以通过应用程序上下文重写。
  * <li>The dispatcher's exception resolution strategy can be specified via a
  * {@link HandlerExceptionResolver}, for example mapping certain exceptions to error pages.
  * Default are
@@ -104,34 +116,44 @@ import org.springframework.web.util.WebUtils;
  * These HandlerExceptionResolvers can be overridden through the application context.
  * HandlerExceptionResolver can be given any bean name (they are tested by type).
  *
+ * 可以通过{@link ViewResolver}实现指定其视图解析策略，将符号视图解析为View对象。
+ * ViewResolver可以作为bean添加到应用程序上下文中，从而覆盖默认的ViewResolver。
  * <li>Its view resolution strategy can be specified via a {@link ViewResolver}
  * implementation, resolving symbolic view names into View objects. Default is
  * {@link org.springframework.web.servlet.view.InternalResourceViewResolver}.
  * ViewResolver objects can be added as beans in the application context, overriding the
  * default ViewResolver. ViewResolvers can be given any bean name (they are tested by type).
  *
+ * 若未提供{@link View}或者视图名，那么配置的{@link RequestToViewNameTranslator}会将当前请求转换为视图名称。
+ * 相应的Bean名称为"viewNameTranslator"。
  * <li>If a {@link View} or view name is not supplied by the user, then the configured
  * {@link RequestToViewNameTranslator} will translate the current request into a view name.
  * The corresponding bean name is "viewNameTranslator"; the default is
  * {@link org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator}.
  *
+ * Dispatcher处理多请求的策略由{@link org.springframework.web.multipart.MultipartResolver}实现确定。
+ * 该实现类包括Apache Common的FileUpload和Servlet 3。
  * <li>The dispatcher's strategy for resolving multipart requests is determined by a
  * {@link org.springframework.web.multipart.MultipartResolver} implementation.
  * Implementations for Apache Commons FileUpload and Servlet 3 are included; the typical
  * choice is {@link org.springframework.web.multipart.commons.CommonsMultipartResolver}.
  * The MultipartResolver bean name is "multipartResolver"; default is none.
  *
+ * 本地化策略是由{@link LocaleResolver}确定的。开箱即用的实现通过Http header，cookie或者session工作
  * <li>Its locale resolution strategy is determined by a {@link LocaleResolver}.
  * Out-of-the-box implementations work via HTTP accept header, cookie, or session.
  * The LocaleResolver bean name is "localeResolver"; default is
  * {@link org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver}.
  *
+ * theme解决策略由{@link ThemeResolver}确定。包括用于固定主题和cookie和session存储的实现。
  * <li>Its theme resolution strategy is determined by a {@link ThemeResolver}.
  * Implementations for a fixed theme and for cookie and session storage are included.
  * The ThemeResolver bean name is "themeResolver"; default is
  * {@link org.springframework.web.servlet.theme.FixedThemeResolver}.
  * </ul>
- *
+ * 注意: 仅当Dispatcher中存在相应的{@code HandlerMapping}或{@code HandlerAdapter}时，才会处理{@code @RequestMapping}注解。
+ * 但是，若要自定义{@code HandlerMappings}或{@code HandlerAdapters}，则需要确保也定义了相应的
+ * {@code RequestMappingHandlerMapping}或{@code RequestMappingHandlerAdapter}。
  * <p><b>NOTE: The {@code @RequestMapping} annotation will only be processed if a
  * corresponding {@code HandlerMapping} (for type-level annotations) and/or
  * {@code HandlerAdapter} (for method-level annotations) is present in the dispatcher.</b>
@@ -140,11 +162,14 @@ import org.springframework.web.util.WebUtils;
  * {@code RequestMappingHandlerMapping} and/or {@code RequestMappingHandlerAdapter}
  * is defined as well - provided that you intend to use {@code @RequestMapping}.
  *
+ * Web应用程序可以定义任何数量的DispatcherServlets。每一个Servlet都会在自己的命名空间中运行，并使用映射，处理程序。
  * <p><b>A web application can define any number of DispatcherServlets.</b>
  * Each servlet will operate in its own namespace, loading its own application context
  * with mappings, handlers, etc. Only the root application context as loaded by
  * {@link org.springframework.web.context.ContextLoaderListener}, if any, will be shared.
  *
+ * 从Spring 3.1开始, {@code DispatcherServlet}被注入到Web应用程序中，而不是在内部创建其自己的。
+ * 这在Servlet 3.0+以上很有用，支持以编程的方式注册Servlet实例。
  * <p>As of Spring 3.1, {@code DispatcherServlet} may now be injected with a web
  * application context, rather than creating its own internally. This is useful in Servlet
  * 3.0+ environments, which support programmatic registration of servlet instances.

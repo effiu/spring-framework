@@ -24,6 +24,8 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.Nullable;
 
 /**
+ * 将LocaleContext实例与当前线程关联的简单的holder类。若{@code inheritable}为true，
+ * 当前线程产生的任何子线程都将继承LocaleContext。
  * Simple holder class that associates a LocaleContext instance
  * with the current thread. The LocaleContext will be inherited
  * by any child threads spawned by the current thread if the

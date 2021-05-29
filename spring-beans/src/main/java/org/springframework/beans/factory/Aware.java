@@ -17,11 +17,14 @@
 package org.springframework.beans.factory;
 
 /**
+ * 标记超级接口，表示Spring容器可以通过回调的方式将bean通知给特定的框架对象。实际的方法签名是
+ * 由各个的子接口确定的，但是通常应由一个接受单个参数的void返回方法组成。
  * A marker superinterface indicating that a bean is eligible to be notified by the
  * Spring container of a particular framework object through a callback-style method.
  * The actual method signature is determined by individual subinterfaces but should
  * typically consist of just one void-returning method that accepts a single argument.
  *
+ * 注意: 仅仅实现{@link Aware}接口不提供任何功能。
  * <p>Note that merely implementing {@link Aware} provides no default functionality.
  * Rather, processing must be done explicitly, for example in a
  * {@link org.springframework.beans.factory.config.BeanPostProcessor}.
