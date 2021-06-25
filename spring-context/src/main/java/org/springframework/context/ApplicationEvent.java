@@ -19,6 +19,7 @@ package org.springframework.context;
 import java.util.EventObject;
 
 /**
+ * 被所有Application Events扩展的类。抽象类，因为直接发布通用事件没有意义。
  * Class to be extended by all application events. Abstract as it
  * doesn't make sense for generic events to be published directly.
  *

@@ -33,9 +33,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
+ * URL路径匹配的Helper类。在{@code RequestDispatcher}中提供对URL路径的支持，并支持一致的URL解码。
  * Helper class for URL path matching. Provides support for URL paths in
  * {@code RequestDispatcher} includes and support for consistent URL decoding.
  *
+ * 用于路径匹配或者URI确定
  * <p>Used by {@link org.springframework.web.servlet.handler.AbstractUrlHandlerMapping}
  * and {@link org.springframework.web.servlet.support.RequestContext} for path matching
  * and/or URI determination.
@@ -50,7 +52,9 @@ import org.springframework.util.StringUtils;
 public class UrlPathHelper {
 
 	/**
+	 * 特殊的WebSphere请求属性，表示原始请求URI。
 	 * Special WebSphere request attribute, indicating the original request URI.
+	 *
 	 * Preferable over the standard Servlet 2.4 forward attribute on WebSphere,
 	 * simply because we need the very first URI in the request forwarding chain.
 	 */
@@ -72,6 +76,8 @@ public class UrlPathHelper {
 
 
 	/**
+	 * URL查找适应应该始终使用当前web应用程序上下文中的完整路径，即在{@link javax.servlet.ServletContext#getContextPath()}中。
+	 * 若为false，则使用当前servlet映射中的路径。
 	 * Whether URL lookups should always use the full path within the current
 	 * web application context, i.e. within
 	 * {@link javax.servlet.ServletContext#getContextPath()}.
@@ -85,6 +91,10 @@ public class UrlPathHelper {
 	}
 
 	/**
+	 * 上下文路径和请求URI是否应该被解码——两者都是由Servlet API返回未解码，与servlet路径相反。
+	 * 设置为true时，将使用请求编码或默认Servlet规范编码
+	 * 注意: 与编码路径相比，servlet路径将不匹配。因此，{@code urlDecode=false}的使用与基于
+	 * 前缀的Servlet映射不兼容。
 	 * Whether the context path and request URI should be decoded -- both of
 	 * which are returned <i>undecoded</i> by the Servlet API, in contrast to
 	 * the servlet path.
@@ -155,6 +165,7 @@ public class UrlPathHelper {
 
 
 	/**
+	 * 返回给定请求的映射查找路径，若适用，则在当前servlet请求中，否则在Web应用程序中。
 	 * Return the mapping lookup path for the given request, within the current
 	 * servlet mapping if applicable, else within the web application.
 	 * <p>Detects include request URL if called within a RequestDispatcher include.
@@ -164,10 +175,12 @@ public class UrlPathHelper {
 	 * @see #getPathWithinApplication
 	 */
 	public String getLookupPathForRequest(HttpServletRequest request) {
+		// 始终在当前servlet上下文中使用完整路径
 		// Always use full path within current servlet context?
 		if (this.alwaysUseFullPath) {
 			return getPathWithinApplication(request);
 		}
+		// 否则，使用当前servlet映射中可用的路径
 		// Else, use path within current servlet mapping if applicable
 		String rest = getPathWithinServletMapping(request);
 		if (!"".equals(rest)) {
@@ -254,6 +267,13 @@ public class UrlPathHelper {
 	}
 
 	/**
+	 * https://localhost:8080/project/path
+	 * {@code request.getContextPath()}返回project
+	 * {@code request.getRequestUri()}返回project/path
+	 * {@code request.getRequestURL()}返回https://localhost:8080/project/path
+	 * {@code request.getServletPath()}path
+	 *
+	 * 返回给定请求在web应用程序中的路径。
 	 * Return the path within the web application for the given request.
 	 * <p>Detects include request URL if called within a RequestDispatcher include.
 	 * @param request current HTTP request
@@ -261,6 +281,7 @@ public class UrlPathHelper {
 	 * @see #getLookupPathForRequest
 	 */
 	public String getPathWithinApplication(HttpServletRequest request) {
+		// 项目的名字，若为根目录则返回""
 		String contextPath = getContextPath(request);
 		String requestUri = getRequestUri(request);
 		String path = getRemainingPath(requestUri, contextPath, true);
@@ -274,6 +295,8 @@ public class UrlPathHelper {
 	}
 
 	/**
+	 * 给定的映射与requestUri开头匹配，若成功则返回额外的部分。这是因为HttpServletRequest
+	 * 返回的上下文路径和servlet路径与requestUri不同，去掉了分号内容
 	 * Match the given "mapping" to the start of the "requestUri" and if there
 	 * is a match return the extra part. This method is needed because the
 	 * context path and the servlet path returned by the HttpServletRequest are
@@ -438,6 +461,7 @@ public class UrlPathHelper {
 	}
 
 	/**
+	 * 返回给定请求的查询字符串部分。若这是一个forwarded转发请求，则正确解析为原始请求的查询字符串。
 	 * Return the query string part of the given request's URL. If this is a forwarded request,
 	 * correctly resolves to the query string of the original request.
 	 * @param request current HTTP request

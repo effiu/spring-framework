@@ -20,8 +20,10 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.lang.Nullable;
 
 /**
+ * 在ApplicationContext中处理请求时引发的事件。
  * Event raised when a request is handled within an ApplicationContext.
  *
+ * 由Spring的自有框架支持，但是也可能被任何其他web组件触发。
  * <p>Supported by Spring's own FrameworkServlet (through a specific
  * ServletRequestHandledEvent subclass), but can also be raised by any
  * other web component.

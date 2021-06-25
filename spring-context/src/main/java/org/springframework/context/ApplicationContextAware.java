@@ -20,14 +20,19 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
 
 /**
+ * 可以被任何希望被{@link ApplicationContext}通知其运行的对象实现的接口，
  * Interface to be implemented by any object that wishes to be notified
  * of the {@link ApplicationContext} that it runs in.
  *
+ * 当一个对象需要访问一组协作bean时，实现这个接口是有意义的。注意，通过bean引用
+ * 进行配置比仅仅出于bean查找目的的实现此接口更可取。
  * <p>Implementing this interface makes sense for example when an object
  * requires access to a set of collaborating beans. Note that configuration
  * via bean references is preferable to implementing this interface just
  * for bean lookup purposes.
  *
+ * 若一个对象需要访问文件资源，即想要调用{@code getResource}、想要发布应用程序事件、或者
+ * 需要访问MessageSource时，也可以实现该接口，然而最好实现更具体的Aware接口。
  * <p>This interface can also be implemented if an object needs access to file
  * resources, i.e. wants to call {@code getResource}, wants to publish
  * an application event, or requires access to the MessageSource. However,
@@ -35,12 +40,14 @@ import org.springframework.beans.factory.Aware;
  * {@link ApplicationEventPublisherAware} or {@link MessageSourceAware} interface
  * in such a specific scenario.
  *
+ * 注意，文件资源依赖也可以作为{@link org.springframework.core.io.Resource}类型的Bean公开，
+ * 通过字符串填充，并由bean工厂进行自动类型转换。这消除了为了访问特定文件资源而实现任何回调接口的需要。
  * <p>Note that file resource dependencies can also be exposed as bean properties
  * of type {@link org.springframework.core.io.Resource}, populated via Strings
  * with automatic type conversion by the bean factory. This removes the need
  * for implementing any callback interface just for the purpose of accessing
  * a specific file resource.
- *
+ * {@code ApplicationObjectSupport}是一个方便的基类，实现了该接口
  * <p>{@link org.springframework.context.support.ApplicationObjectSupport} is a
  * convenience base class for application objects, implementing this interface.
  *
@@ -59,6 +66,10 @@ import org.springframework.beans.factory.Aware;
 public interface ApplicationContextAware extends Aware {
 
 	/**
+	 * 设置此对象在其中运行的ApplicationContext。通常，该调用用于初始化对象。
+	 * 在填充正常bean属性之后，但是初始化回调之前，例如
+	 * {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()}或者自定义init方法。
+	 *
 	 * Set the ApplicationContext that this object runs in.
 	 * Normally this call will be used to initialize the object.
 	 * <p>Invoked after population of normal bean properties but before an init callback such

@@ -32,8 +32,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.WebUtils;
 
 /**
+ * 基于Servlet的实现类。
  * Servlet-based implementation of the {@link RequestAttributes} interface.
- *
+ * 从servlet请求和HTTP会话范围访问对象，会话和全局会话之间没有区别。
  * <p>Accesses objects from servlet request and HTTP session scope,
  * with no distinction between "session" and "global session".
  *

@@ -383,6 +383,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 
 	/**
+	 * 为给定请求查找一个handler，若没有找到特定的handler，则返回默认的handler
 	 * Look up a handler for the given request, falling back to the default
 	 * handler if no specific one is found.
 	 * @param request current HTTP request
@@ -405,6 +406,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			handler = obtainApplicationContext().getBean(handlerName);
 		}
 
+		// 构建handler执行链
 		HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
 
 		if (logger.isTraceEnabled()) {
@@ -413,11 +415,14 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		else if (logger.isDebugEnabled() && !request.getDispatcherType().equals(DispatcherType.ASYNC)) {
 			logger.debug("Mapped to " + executionChain.getHandler());
 		}
-
+		// 跨域配置检查，若是跨域请求，需要根据CorsConfiguration
 		if (hasCorsConfigurationSource(handler) || CorsUtils.isPreFlightRequest(request)) {
+			// 应用程序的跨域配置
 			CorsConfiguration config = (this.corsConfigurationSource != null ? this.corsConfigurationSource.getCorsConfiguration(request) : null);
+			// 该请求的跨域配置
 			CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
 			config = (config != null ? config.combine(handlerConfig) : handlerConfig);
+			// 组合后，将跨域拦截器CorsInterceptor放置到执行链的第一个位置
 			executionChain = getCorsHandlerExecutionChain(request, executionChain, config);
 		}
 

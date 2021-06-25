@@ -440,6 +440,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	}
 
 	/**
+	 * 设置该Servlet是否应该重定向一个HTTP OPTIONS请求到{@link #doService}方法
 	 * Set whether this servlet should dispatch an HTTP OPTIONS request to
 	 * the {@link #doService} method.
 	 * <p>Default in the {@code FrameworkServlet} is "false", applying
@@ -876,10 +877,16 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			throws ServletException, IOException {
 
 		HttpMethod httpMethod = HttpMethod.resolve(request.getMethod());
+		// HttpServlet没有提供PATCH类型的请求
 		if (httpMethod == HttpMethod.PATCH || httpMethod == null) {
 			processRequest(request, response);
 		}
 		else {
+			/**
+			 * 这里会通过{@code HttpServlet.service(request, response)}方法针对不同请求做一个转发，
+			 * 因为不同类型的请求处理有略微的不同。对于Spring来说，get/post/put/delete请求处理方式一致
+			 * option的跨域的preflight请求
+			 */
 			super.service(request, response);
 		}
 	}
@@ -940,7 +947,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	@Override
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// CORS跨域机器的preflight请求(option),请求成功后才会发送真正的请求,
+		// dispatchOptionsRequest属性在DispatcherServlet Bean创建时被初始化，默认为false，但是构造方法修改为true
 		if (this.dispatchOptionsRequest || CorsUtils.isPreFlightRequest(request)) {
 			processRequest(request, response);
 			if (response.containsHeader("Allow")) {
@@ -988,12 +996,17 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 */
 	protected final void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// 记录当前时间戳
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
 
-		// 一个ThreadLocal变量
+		/**
+		 * @see org.springframework.web.context.request.RequestContextListener 用于监听ServletRequest对象的创建和销毁。
+		 * LocaleContextHolder和RequestContextHolder中的threadLocal变量由RequestContextListener类负责管理
+		 */
+		// 一个ThreadLocal变量，LocaleContextHolder持有Locale、TimeZone两个属性
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
+		// 包含request.getLocale()信息的LocalContext
 		LocaleContext localeContext = buildLocaleContext(request);
 
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
@@ -1002,9 +1015,11 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 		asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
 
+		// 更新LocaleContextHolder和RequestContextHolder
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			// 真正处理请求的地方，由DispatcherServlet实现
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {
@@ -1017,11 +1032,14 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 
 		finally {
+			// 还原LocaleContextHolder和RequestContextHolder
 			resetContextHolders(request, previousLocaleContext, previousAttributes);
 			if (requestAttributes != null) {
 				requestAttributes.requestCompleted();
 			}
+			// 打印日志
 			logResult(request, response, failureCause, asyncManager);
+			// 发布ServletRequestHandledEvent事件，监听Spring MVC的请求、打印日志等
 			publishRequestHandledEvent(request, response, startTime, failureCause);
 		}
 	}

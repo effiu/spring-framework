@@ -24,6 +24,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 以线程绑定{@link RequestAttributes}对象的形式公开Web请求。
+ * 该请求将会被任何子线程继承，若{@code inheritable}为{@code true}。
  * Holder class to expose the web request in the form of a thread-bound
  * {@link RequestAttributes} object. The request will be inherited
  * by any child threads spawned by the current thread if the

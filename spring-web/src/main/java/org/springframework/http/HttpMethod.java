@@ -32,6 +32,7 @@ import org.springframework.lang.Nullable;
  */
 public enum HttpMethod {
 
+	// HTTP请求类型
 	GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
 
 
@@ -43,8 +44,8 @@ public enum HttpMethod {
 		}
 	}
 
-
 	/**
+	 * 将给定的方法值解析为{@code HttpMethod}
 	 * Resolve the given method value to an {@code HttpMethod}.
 	 * @param method the method value as a String
 	 * @return the corresponding {@code HttpMethod}, or {@code null} if not found
@@ -57,6 +58,7 @@ public enum HttpMethod {
 
 
 	/**
+	 * 判断{@code HttpMethod}是否与给定的method匹配
 	 * Determine whether this {@code HttpMethod} matches the given
 	 * method value.
 	 * @param method the method value as a String

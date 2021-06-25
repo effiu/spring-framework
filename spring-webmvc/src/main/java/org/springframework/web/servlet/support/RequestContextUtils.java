@@ -45,6 +45,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
+ * 工具类，便于访问当前请求在{@code DispatcherServlet}中指定的状态。支持
+ * 查找当前的ApplicationContext、localeResolver、Local、ThemeResolver、Theme、MultipartResolver。
  * Utility class for easy access to request-specific state which has been
  * set by the {@link org.springframework.web.servlet.DispatcherServlet}.
  *
@@ -60,6 +62,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public abstract class RequestContextUtils {
 
 	/**
+	 * 用于在{@link RequestDataValueProcessor}的实现中查找bean的名称。
 	 * The name of the bean to use to look up in an implementation of
 	 * {@link RequestDataValueProcessor} has been configured.
 	 * @since 4.2.1
@@ -68,6 +71,8 @@ public abstract class RequestContextUtils {
 
 
 	/**
+	 * 查找与初始化请求处理的DispatcherServlet关联的WebApplicationContext，如果没有找到，则查找全局上下文。
+	 * 通过ServletContext或者ContextLoader查找全局上下文。
 	 * Look for the WebApplicationContext associated with the DispatcherServlet
 	 * that has initiated request processing, and for the global context if none
 	 * was found associated with the current request. The global context will
@@ -121,6 +126,7 @@ public abstract class RequestContextUtils {
 	}
 
 	/**
+	 * 返回已经被DispatcherServlet绑定到request中的LocaleResolver
 	 * Return the LocaleResolver that has been bound to the request by the
 	 * DispatcherServlet.
 	 * @param request current HTTP request
@@ -132,6 +138,9 @@ public abstract class RequestContextUtils {
 	}
 
 	/**
+	 * 检索给定请求的当前语言环境，使用DispatcherServlet(若可用)绑定到request的LocaleResolver，
+	 * 回退到请求的accept-header语言环境。该方法是标准Servlet{@link javax.servlet.http.HttpServletRequest#getLocale()}的
+	 * 替代方法，若找不到更具体的语言环境，则使用后者。考虑使用{@code LocaleContextHolder#getLocale()}，其会填充相同的区域设置。
 	 * Retrieve the current locale from the given request, using the
 	 * LocaleResolver bound to the request by the DispatcherServlet
 	 * (if available), falling back to the request's accept-header Locale.
@@ -152,6 +161,12 @@ public abstract class RequestContextUtils {
 	}
 
 	/**
+	 * 从当前request中检索当前时区，使用DispatcherServlet绑定到request中的
+	 * {@code TimeZoneAwareLocaleResolver}(若可用)，回退到系统的默认时区。
+	 * 注意: 若request未指定时区，则该方法返回{@code null}。这与{@link #getLocale}
+	 * 形成对比，后者总是有请求的接受头语言环境要回退。
+	 * 考虑使用{@link org.springframework.context.i18n.LocaleContextHolder#getTimeZone()},
+	 * 其通常会填充相同的时区。若未提供{@code LocaleResolver}则该方法仅在回退到系统时区方面有所不同。
 	 * Retrieve the current time zone from the given request, using the
 	 * TimeZoneAwareLocaleResolver bound to the request by the DispatcherServlet
 	 * (if available), falling back to the system's default time zone.
@@ -223,6 +238,7 @@ public abstract class RequestContextUtils {
 	}
 
 	/**
+	 * 在重定向之前从请求中返回只读的input flash属性。
 	 * Return read-only "input" flash attributes from request before redirect.
 	 * @param request current request
 	 * @return a read-only Map, or {@code null} if not found

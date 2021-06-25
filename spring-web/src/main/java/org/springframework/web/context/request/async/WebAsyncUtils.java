@@ -24,6 +24,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 /**
+ * 与异步处理Web请求相关的使用方法
  * Utility methods related to processing asynchronous web requests.
  *
  * @author Rossen Stoyanchev

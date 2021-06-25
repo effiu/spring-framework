@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.util.Assert;
 
 /**
+ * RequestAttributes的抽象实现类，为特定请求的销毁回调和新访问会话属性提供请求完成机制。
  * Abstract support class for RequestAttributes implementations,
  * offering a request completion mechanism for request-specific destruction
  * callbacks and for updating accessed session attributes.
@@ -39,6 +40,7 @@ public abstract class AbstractRequestAttributes implements RequestAttributes {
 
 
 	/**
+	 * 发出请求已经被完成的信号，执行所有的请求销毁回调和更新在请求处理期间访问过的会话属性
 	 * Signal that the request has been completed.
 	 * <p>Executes all request destruction callbacks and updates the
 	 * session attributes that have been accessed during request processing.
@@ -58,6 +60,7 @@ public abstract class AbstractRequestAttributes implements RequestAttributes {
 	}
 
 	/**
+	 * 注册给定的回调以在请求完成后执行。
 	 * Register the given callback as to be executed after request completion.
 	 * @param name the name of the attribute to register the callback for
 	 * @param callback the callback to be executed for destruction
@@ -71,6 +74,7 @@ public abstract class AbstractRequestAttributes implements RequestAttributes {
 	}
 
 	/**
+	 * 移除指定属性的请求销毁回调
 	 * Remove the request destruction callback for the specified attribute, if any.
 	 * @param name the name of the attribute to remove the callback for
 	 */

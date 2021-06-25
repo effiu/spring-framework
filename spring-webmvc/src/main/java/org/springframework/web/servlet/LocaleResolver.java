@@ -24,19 +24,26 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
 
 /**
+ * 基于web的语言解析策略接口，允许通过请求进行语言设置解析和通过请求和响应进行语言设置。
  * Interface for web-based locale resolution strategies that allows for
  * both locale resolution via the request and locale modification via
  * request and response.
  *
+ * 该接口允许基于request、session、cookie等实现。
+ * 默认实现是{@code AcceptHeaderLocaleResolver}, 简单使用响应HTTP请求头提供的的语言环境。
  * <p>This interface allows for implementations based on request, session,
  * cookies, etc. The default implementation is
  * {@link org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver},
  * simply using the request's locale provided by the respective HTTP header.
  *
+ * 使用{@code RequestContext#getLocale()}方法检索Controller或者view中的语言环境，独立于实际的解析策略。
  * <p>Use {@link org.springframework.web.servlet.support.RequestContext#getLocale()}
  * to retrieve the current locale in controllers or views, independent
  * of the actual resolution strategy.
  *
+ * 注意：从Spring 4.0开始，有一个扩展策略接口{@link LocaleContextResolver}，
+ * 允许解析{@link org.springframework.context.i18n.LocaleContext}对象，可能包括时区信息。
+ * Spring提供的解析器实现在适当地方提供了扩展的{@link LocaleContextResolver}接口。
  * <p>Note: As of Spring 4.0, there is an extended strategy interface
  * called {@link LocaleContextResolver}, allowing for resolution of
  * a {@link org.springframework.context.i18n.LocaleContext} object,
@@ -54,6 +61,7 @@ import org.springframework.lang.Nullable;
 public interface LocaleResolver {
 
 	/**
+	 * 通过给定的request解析当前的语言环境。任何时候都可以返回默认语言环境作为后备。
 	 * Resolve the current locale via the given request.
 	 * Can return a default locale as fallback in any case.
 	 * @param request the request to resolve the locale for
@@ -62,6 +70,7 @@ public interface LocaleResolver {
 	Locale resolveLocale(HttpServletRequest request);
 
 	/**
+	 * 设置给定的locale到request和response。
 	 * Set the current locale to the given one.
 	 * @param request the request to be used for locale modification
 	 * @param response the response to be used for locale modification

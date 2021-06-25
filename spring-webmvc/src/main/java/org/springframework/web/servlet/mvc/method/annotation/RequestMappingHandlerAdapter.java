@@ -100,7 +100,8 @@ import org.springframework.web.util.WebUtils;
 /**
  * Extension of {@link AbstractHandlerMethodAdapter} that supports
  * {@link RequestMapping @RequestMapping} annotated {@link HandlerMethod HandlerMethods}.
- *
+ * 可以通过{@link #setCustomArgumentResolvers}和{@link #setCustomReturnValueHandlers}
+ * 添加对自定义参数和返回值类型的支持，或者重新配置所有参数和返回值类型，使用{@link #setArgumentResolvers}和{@link #setReturnValueHandlers}。
  * <p>Support for custom argument and return value types can be added via
  * {@link #setCustomArgumentResolvers} and {@link #setCustomReturnValueHandlers},
  * or alternatively, to re-configure all argument and return value types,
@@ -875,12 +876,12 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				});
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
-
+			// 这里调用对应的handler
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
 			}
-
+			// 渲染视图
 			return getModelAndView(mavContainer, modelFactory, webRequest);
 		}
 		finally {

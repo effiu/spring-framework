@@ -5986,7 +5986,7 @@ public class SpelCompilationCoverageTests extends AbstractExpressionTests {
 	}
 
 
-	// public class SecurityContextHolderAwareRequestWrapper extends HttpServletRequestWrapper
+	// pu·blic class SecurityContextHolderAwareRequestWrapper extends HttpServletRequestWrapper
 	static class SecurityContextHolderAwareRequestWrapper extends HttpServletRequestWrapper {
 	}
 

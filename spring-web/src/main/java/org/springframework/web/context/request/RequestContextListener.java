@@ -23,15 +23,20 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
+ * @see javax.servlet.ServletRequestListener 是用于监听ServletRequest对象的创建和销毁。
+ * 公开请求到当前线程的Servlet监听器。
  * Servlet listener that exposes the request to the current thread,
  * through both {@link org.springframework.context.i18n.LocaleContextHolder} and
  * {@link RequestContextHolder}. To be registered as listener in {@code web.xml}.
  *
+ * 或者，Spring的{@code RequestContextFilter}和{@code DispatcherServlet}也公开相同的请求上下文到当前线程。
+ * 与该监听器相比，其提供了更高级的选项，例如threadContextInheritable。
  * <p>Alternatively, Spring's {@link org.springframework.web.filter.RequestContextFilter}
  * and Spring's {@link org.springframework.web.servlet.DispatcherServlet} also expose
  * the same request context to the current thread. In contrast to this listener,
  * advanced options are available there (e.g. "threadContextInheritable").
  *
+ * 该监听器主要用于三方Servlet。例如JSF FacesServlet。在Spring自己的web支持中，DispatcherServlet是完全足够的。
  * <p>This listener is mainly for use with third-party servlets, e.g. the JSF FacesServlet.
  * Within Spring's own web support, DispatcherServlet's processing is perfectly sufficient.
  *

@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 
 /**
+ * 当没有明确提供视图名称时，将传入的{@link javax.servlet.http.HttpServletRequest}
+ * 转换为逻辑视图名的策略接口
  * Strategy interface for translating an incoming
  * {@link javax.servlet.http.HttpServletRequest} into a
  * logical view name when no view name is explicitly supplied.
@@ -32,6 +34,7 @@ import org.springframework.lang.Nullable;
 public interface RequestToViewNameTranslator {
 
 	/**
+	 * 翻译给定的{@link HttpServletRequest}为一个视图名
 	 * Translate the given {@link HttpServletRequest} into a view name.
 	 * @param request the incoming {@link HttpServletRequest} providing
 	 * the context from which a view name is to be resolved

@@ -38,6 +38,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.async.DeferredResult.DeferredResultHandler;
 
 /**
+ * 管理异步请求处理的中心类，主要用于SPI，通常不由应用程序类直接使用。
  * The central class for managing asynchronous request processing, mainly intended
  * as an SPI and not typically used directly by application classes.
  *

@@ -27,11 +27,14 @@ import org.springframework.core.io.ProtocolResolver;
 import org.springframework.lang.Nullable;
 
 /**
+ * SPI接口，由大部分但不是全部应用程序上下文实现。除了
+ * {@link org.springframework.context.ApplicationContext}
+ * 接口中的应用程序上下文客户端方法之外，提供配置应用程序上下文的工具。
  * SPI interface to be implemented by most if not all application contexts.
  * Provides facilities to configure an application context in addition
  * to the application context client methods in the
  * {@link org.springframework.context.ApplicationContext} interface.
- *
+ * 配置和生命周期方法
  * <p>Configuration and lifecycle methods are encapsulated here to avoid
  * making them obvious to ApplicationContext client code. The present
  * methods should only be used by startup and shutdown code.

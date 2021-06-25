@@ -216,6 +216,7 @@ public class ModelAndView {
 	}
 
 	/**
+	 * 表示该{@code ModelAndView}是否有view。
 	 * Indicate whether or not this {@code ModelAndView} has a view, either
 	 * as a view name or as a direct {@link View} instance.
 	 */
@@ -336,6 +337,7 @@ public class ModelAndView {
 	}
 
 	/**
+	 * 返回ModelAndView是否因为调用{@link #clear}而为空，即它是否不包含任何视图且不包含模型
 	 * Return whether this ModelAndView object is empty as a result of a call to {@link #clear}
 	 * i.e. whether it does not hold any view and does not contain a model.
 	 * <p>Returns {@code false} if any additional state was added to the instance

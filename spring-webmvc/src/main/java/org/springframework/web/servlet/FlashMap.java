@@ -25,12 +25,17 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * FlashMap为一个请求提供了一种存储用于另一个请求的属性的方法。最常见的是当一个URL重定向到另一个URL时，
+ * 例如，发布/重定向/获取模式。FlashMap在重定向执行被保存，且重定向之后可用并立即删除。
  * A FlashMap provides a way for one request to store attributes intended for
  * use in another. This is most commonly needed when redirecting from one URL
  * to another -- e.g. the Post/Redirect/Get pattern. A FlashMap is saved before
  * the redirect (typically in the session) and is made available after the
  * redirect and removed immediately.
  *
+ * 可以使用请求路径和请求参数来设置FlashMap，以帮助识别目标请求。没有此信息，FlashMap可用于下一个请求，
+ * 该请求可能不是预期中的接收者。在重定向中，目标URL是已知的，FlashMap可以使用该信息更新。这是在使用
+ * {@code org.springframework.web.servlet.view.RedirectView}时自动完成的。
  * <p>A FlashMap can be set up with a request path and request parameters to
  * help identify the target request. Without this information, a FlashMap is
  * made available to the next request, which may or may not be the intended
@@ -38,6 +43,7 @@ import org.springframework.util.StringUtils;
  * updated with that information. This is done automatically when the
  * {@code org.springframework.web.servlet.view.RedirectView} is used.
  *
+ * 注意: 带注解的控制器通过不直接使用FlashMap。
  * <p>Note: annotated controllers will usually not use FlashMap directly.
  * See {@code org.springframework.web.servlet.mvc.support.RedirectAttributes}
  * for an overview of using flash attributes in annotated controllers.
@@ -51,7 +57,9 @@ public final class FlashMap extends HashMap<String, Object> implements Comparabl
 
 	@Nullable
 	private String targetRequestPath;
-
+	/**
+	 * 一个key对应多个值，value为一个链表
+	 */
 	private final MultiValueMap<String, String> targetRequestParams = new LinkedMultiValueMap<>(4);
 
 	private long expirationTime = -1;
@@ -144,6 +152,7 @@ public final class FlashMap extends HashMap<String, Object> implements Comparabl
 
 
 	/**
+	 * 比较两个FlashMap，并首选指定目标URL路径或具有更多目标URL参数的那个。
 	 * Compare two FlashMaps and prefer the one that specifies a target URL
 	 * path or has more target URL parameters. Before comparing FlashMap
 	 * instances ensure that they match a given request.

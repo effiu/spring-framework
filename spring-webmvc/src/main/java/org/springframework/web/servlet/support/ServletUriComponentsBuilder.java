@@ -29,9 +29,13 @@ import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
+ * UriComponentsBuilder带有额外的静态工厂方法，可以根据当前HttpServletRequest的链接。
  * UriComponentsBuilder with additional static factory methods to create links
  * based on the current HttpServletRequest.
  *
+ * 注意: 从Spring 5.1开始，此类中的方法不会提取指定客户端发起地址的{@code "Forwarded"}和
+ * {@code "X-Forwarded-*"}表头。请使用{@link org.springframework.web.filter.ForwardedHeaderFilter}
+ * 或者来自底层服务器的类似方法来提取和使用此类表头，或者丢弃它们。
  * <p><strong>Note:</strong> As of 5.1, methods in this class do not extract
  * {@code "Forwarded"} and {@code "X-Forwarded-*"} headers that specify the
  * client-originated address. Please, use

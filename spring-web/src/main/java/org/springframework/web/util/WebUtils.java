@@ -446,6 +446,7 @@ public abstract class WebUtils {
 
 
 	/**
+	 * 返回指定类型的合适的请求对象
 	 * Return an appropriate request object of the specified type, if available,
 	 * unwrapping the given request as far as necessary.
 	 * @param request the servlet request to introspect
@@ -457,6 +458,7 @@ public abstract class WebUtils {
 	@Nullable
 	public static <T> T getNativeRequest(ServletRequest request, @Nullable Class<T> requiredType) {
 		if (requiredType != null) {
+			// 判断给定的request是否与requiredType兼容，等效于instanceOf
 			if (requiredType.isInstance(request)) {
 				return (T) request;
 			}

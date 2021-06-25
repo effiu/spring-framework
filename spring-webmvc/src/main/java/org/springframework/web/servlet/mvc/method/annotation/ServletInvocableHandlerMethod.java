@@ -93,6 +93,7 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 
 
 	/**
+	 * 通过配置的{@link HandlerMethodReturnValueHandler HandlerMethodReturnValueHandlers}调用该方法并处理返回值
 	 * Invoke the method and handle the return value through one of the
 	 * configured {@link HandlerMethodReturnValueHandler HandlerMethodReturnValueHandlers}.
 	 * @param webRequest the current request
@@ -101,7 +102,7 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	 */
 	public void invokeAndHandle(ServletWebRequest webRequest, ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		// 处理参数并调用Controller的方法
 		Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
 		setResponseStatus(webRequest);
 

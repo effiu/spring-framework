@@ -33,9 +33,10 @@ import org.springframework.util.PropertiesPersister;
 import org.springframework.util.ResourceUtils;
 
 /**
+ * 用于加载{@code java.util.Properties}的便捷实用方法，执行输入流的标准处理。
  * Convenient utility methods for loading of {@code java.util.Properties},
  * performing standard handling of input streams.
- *
+ * 要加载更多可配置属性，包括自定义编码，考虑使用PropertiesLoaderSupport类
  * <p>For more configurable properties loading, including the option of a
  * customized encoding, consider using the PropertiesLoaderSupport class.
  *
@@ -50,6 +51,7 @@ public abstract class PropertiesLoaderUtils {
 
 
 	/**
+	 * 从给定的EncodedResource加载资源，可能为属性文件定义特定的编码
 	 * Load properties from the given EncodedResource,
 	 * potentially defining a specific encoding for the properties file.
 	 * @see #fillProperties(java.util.Properties, EncodedResource)
@@ -61,6 +63,7 @@ public abstract class PropertiesLoaderUtils {
 	}
 
 	/**
+	 * 填充给定的属性
 	 * Fill the given properties from the given EncodedResource,
 	 * potentially defining a specific encoding for the properties file.
 	 * @param props the Properties instance to load into
@@ -74,6 +77,7 @@ public abstract class PropertiesLoaderUtils {
 	}
 
 	/**
+	 * 从给定的EncodedResource加载属性到给定的Properties实例
 	 * Actually load properties from the given EncodedResource into the given Properties instance.
 	 * @param props the Properties instance to load into
 	 * @param resource the resource to load from

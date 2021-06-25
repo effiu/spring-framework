@@ -30,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * Handler执行链，包含handler对象和任何handler拦截器。由{@link HandlerMapping#getHandler}方法返回。
  * Handler execution chain, consisting of handler object and any handler interceptors.
  * Returned by HandlerMapping's {@link HandlerMapping#getHandler} method.
  *
@@ -41,8 +42,14 @@ public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
 
+	/**
+	 * 处理器
+	 */
 	private final Object handler;
 
+	/**
+	 * handler拦截器
+	 */
 	@Nullable
 	private HandlerInterceptor[] interceptors;
 
@@ -128,6 +135,9 @@ public class HandlerExecutionChain {
 
 
 	/**
+	 * 调用注册的handler拦截器的preHandle方法。
+	 * 返回true，如果执行链执行到下一个拦截器或者handler本身。否则DispatcherServlet
+	 * 会假设这个interceptor已经处理了响应
 	 * Apply preHandle methods of registered interceptors.
 	 * @return {@code true} if the execution chain should proceed with the
 	 * next interceptor or the handler itself. Else, DispatcherServlet assumes
@@ -138,6 +148,8 @@ public class HandlerExecutionChain {
 		if (!ObjectUtils.isEmpty(interceptors)) {
 			for (int i = 0; i < interceptors.length; i++) {
 				HandlerInterceptor interceptor = interceptors[i];
+				// preHandle返回false直接触发afterCompletion回调，不会执行为执行applyPreHandle对应的afterComplete方法
+				// 但是会执行已经执行过preHandle方法对应的afterComplete方法
 				if (!interceptor.preHandle(request, response, this.handler)) {
 					triggerAfterCompletion(request, response, null);
 					return false;
@@ -149,6 +161,7 @@ public class HandlerExecutionChain {
 	}
 
 	/**
+	 * 调用注册的拦截器的postHandle方法
 	 * Apply postHandle methods of registered interceptors.
 	 */
 	void applyPostHandle(HttpServletRequest request, HttpServletResponse response, @Nullable ModelAndView mv)
@@ -164,6 +177,7 @@ public class HandlerExecutionChain {
 	}
 
 	/**
+	 * 在映射的HandlerInterceptors上触发afterCompletion回调。只为调用preHandle成功且返回true的拦截器调用afterCompletion。
 	 * Trigger afterCompletion callbacks on the mapped HandlerInterceptors.
 	 * Will just invoke afterCompletion for all interceptors whose preHandle invocation
 	 * has successfully completed and returned true.
@@ -186,6 +200,7 @@ public class HandlerExecutionChain {
 	}
 
 	/**
+	 * 触发afterConcurrentHandlerStarted回掉
 	 * Apply afterConcurrentHandlerStarted callback on mapped AsyncHandlerInterceptors.
 	 */
 	void applyAfterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response) {

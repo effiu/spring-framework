@@ -54,10 +54,15 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
 /**
+ * 从{@link Controller @Controller}类中的类型和方法级
+ * {@link RequestMapping @RequestMapping}注解创建{@link RequestMappingInfo}。
  * Creates {@link RequestMappingInfo} instances from type and method-level
  * {@link RequestMapping @RequestMapping} annotations in
  * {@link Controller @Controller} classes.
  *
+ * 弃用说明: {@link #setUseSuffixPatternMatch(boolean) useSuffixPatternMatch}和
+ * {@link #setUseRegisteredSuffixPatternMatch(boolean) useRegisteredSuffixPatternMatch}
+ * 已经被启用，以阻止使用路径扩展进行请求映射和内容协商。
  * <p><strong>Deprecation Note:</strong></p> In 5.2.4,
  * {@link #setUseSuffixPatternMatch(boolean) useSuffixPatternMatch} and
  * {@link #setUseRegisteredSuffixPatternMatch(boolean) useRegisteredSuffixPatternMatch}
@@ -74,8 +79,14 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
 public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMapping
 		implements MatchableHandlerMapping, EmbeddedValueResolverAware {
 
+	/**
+	 * 是否使用后缀匹配模式
+	 */
 	private boolean useSuffixPatternMatch = false;
 
+	/**
+	 *
+	 */
 	private boolean useRegisteredSuffixPatternMatch = false;
 
 	private boolean useTrailingSlashMatch = true;
@@ -91,6 +102,8 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 
 
 	/**
+	 * 当匹配到请求时是否使用后缀匹配模式。若启用映射到/users"的方法也会匹配到"/users.*"。默认为false。
+	 * 参考{@link #setUseRegisteredSuffixPatternMatch(boolean)}获得对特定后缀的更细粒度的控制。
 	 * Whether to use suffix pattern match (".*") when matching patterns to
 	 * requests. If enabled a method mapped to "/users" also matches to "/users.*".
 	 * <p>By default value this is set to {@code false}.
@@ -107,6 +120,8 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	/**
+	 * 是否后缀模式匹配是否仅对使用{@link ContentNegotiationManager}显式注册的路径扩展起作用。
+	 * 通常建议这样做以减少歧义并避免出现诸如"."之类的问题。
 	 * Whether suffix pattern matching should work only against path extensions
 	 * explicitly registered with the {@link ContentNegotiationManager}. This
 	 * is generally recommended to reduce ambiguity and to avoid issues such as

@@ -109,6 +109,9 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 
 	/**
+	 * 在给定请求的上下文中解析其参数值后调用该方法。参数值通常通过
+	 * {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}解析。
+	 * 然而{@code providedArgs}参数可以提供可以直接使用的参数值，即没有参数解析。
 	 * Invoke the method after resolving its argument values in the context of the given request.
 	 * <p>Argument values are commonly resolved through
 	 * {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
@@ -135,6 +138,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Arguments: " + Arrays.toString(args));
 		}
+		// 通过反射调用对应的方法
 		return doInvoke(args);
 	}
 
@@ -181,12 +185,14 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	}
 
 	/**
+	 * 使用给定的参数调用handler方法
 	 * Invoke the handler method with the given argument values.
 	 */
 	@Nullable
 	protected Object doInvoke(Object... args) throws Exception {
 		ReflectionUtils.makeAccessible(getBridgedMethod());
 		try {
+			// 通过返回调用HandlerMapping确认的Controller的方法
 			return getBridgedMethod().invoke(getBean(), args);
 		}
 		catch (IllegalArgumentException ex) {
