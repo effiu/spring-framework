@@ -66,6 +66,8 @@ public abstract class CorsUtils {
 	}
 
 	/**
+	 * 若请求是有效的CORP预检请求，则返回{@code true}，通过检查{code OPTIONS}方法与{@code Origin}
+	 * 和{@code Access-Control-Request-Method}标头是否存在。
 	 * Returns {@code true} if the request is a valid CORS pre-flight one by checking {code OPTIONS} method with
 	 * {@code Origin} and {@code Access-Control-Request-Method} headers presence.
 	 */

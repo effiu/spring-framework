@@ -35,10 +35,13 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
+ * 确定请求媒体类型的中央类。这是通过委托配置的{@code ContentNegotiationStrategy}实例列表完成的。
  * Central class to determine requested {@linkplain MediaType media types}
  * for a request. This is done by delegating to a list of configured
  * {@code ContentNegotiationStrategy} instances.
  *
+ * 还提供了寻找媒体类型文件扩展名的方法。这是通过委托配置的
+ * {@code MediaTypeFileExtensionResolver}实例列表来完成的。
  * <p>Also provides methods to look up file extensions for a media type.
  * This is done by delegating to the list of configured
  * {@code MediaTypeFileExtensionResolver} instances.

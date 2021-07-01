@@ -24,9 +24,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
 
 /**
+ * 接受请求和{@link CorsConfiguration}并更新响应的策略。
  * A strategy that takes a request and a {@link CorsConfiguration} and updates
  * the response.
  *
+ * 该组件不关注如何选择{@code CorsConfiguration}，而是采取后续才做，例如应用CORS验证检测
+ * 以及拒绝响应或向响应添加CORS标识。
  * <p>This component is not concerned with how a {@code CorsConfiguration} is
  * selected but rather takes follow-up actions such as applying CORS validation
  * checks and either rejecting the response or adding CORS headers to the
@@ -41,6 +44,7 @@ import org.springframework.lang.Nullable;
 public interface CorsProcessor {
 
 	/**
+	 * 处理给定{@code CorsConfiguration}的请求。
 	 * Process a request given a {@code CorsConfiguration}.
 	 * @param configuration the applicable CORS configuration (possibly {@code null})
 	 * @param request the current request

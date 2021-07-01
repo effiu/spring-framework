@@ -81,12 +81,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 
 	/**
 	 * 是否使用后缀匹配模式
+	 * 若启用映射到"/users"的方法也会匹配到"/users.*"。默认为false。
 	 */
 	private boolean useSuffixPatternMatch = false;
 
-	/**
-	 *
-	 */
 	private boolean useRegisteredSuffixPatternMatch = false;
 
 	private boolean useTrailingSlashMatch = true;
@@ -102,7 +100,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 
 
 	/**
-	 * 当匹配到请求时是否使用后缀匹配模式。若启用映射到/users"的方法也会匹配到"/users.*"。默认为false。
+	 * 当匹配到请求时是否使用后缀匹配模式。若启用映射到"/users"的方法也会匹配到"/users.*"。默认为false。
 	 * 参考{@link #setUseRegisteredSuffixPatternMatch(boolean)}获得对特定后缀的更细粒度的控制。
 	 * Whether to use suffix pattern match (".*") when matching patterns to
 	 * requests. If enabled a method mapped to "/users" also matches to "/users.*".
@@ -137,6 +135,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	/**
+	 * 是否与URL匹配而不考虑是否存在尾斜杠。默认为{@code true}。若启用，则"/users"与"/users/"匹配。
 	 * Whether to match to URLs irrespective of the presence of a trailing slash.
 	 * If enabled a method mapped to "/users" also matches to "/users/".
 	 * <p>The default value is {@code true}.
@@ -146,6 +145,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	/**
+	 * 配置路径前缀以应用于控制器方法。前缀用于丰富每个{@code @RequestMapping}方法的映射，
+	 * 其控制器类型与相应的{@code Predicate}匹配。使用第一个匹配谓词的前缀。考虑使用
+	 * {@link org.springframework.web.method.HandlerTypePredicate}对控制器进行分组
 	 * Configure path prefixes to apply to controller methods.
 	 * <p>Prefixes are used to enrich the mappings of every {@code @RequestMapping}
 	 * method whose controller type is matched by the corresponding

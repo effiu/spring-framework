@@ -153,7 +153,7 @@ public interface HandlerMapping {
 	 * handler objects to be used.
 	 *
 	 * 若没有匹配成功返回null，这不是一个错误。DispatcherServlet将会查询所有的HandlerMapping bean
-	 * 去匹配，若仍没有匹配成功的情况下才确定存在错误
+	 * 去匹配，若仍没有匹配成功的情况下才确定存在错误。
 	 * <p>Returns {@code null} if no match was found. This is not an error.
 	 * The DispatcherServlet will query all registered HandlerMapping beans to find
 	 * a match, and only decide there is an error if none can find a handler.

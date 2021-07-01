@@ -27,18 +27,23 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 想要了解应用程序上下文的应用程序对象的方便超类，例如，用于协作bean的自定义查找
+ * 或者特定于上下文的资源访问。它保存应用程序上下文的引用，且提供一个初始化回调方法。
+ * 此外，还提供了许多方便的消息查找方法。
  * Convenient superclass for application objects that want to be aware of
  * the application context, e.g. for custom lookup of collaborating beans
  * or for context-specific resource access. It saves the application
  * context reference and provides an initialization callback method.
  * Furthermore, it offers numerous convenience methods for message lookup.
  *
+ * 不需要对此类进行子类化：若想要访问上下文，其会变得容易一些。例如访问文件资源或者消息源。
+ * 注意，许多应用程序对象不需要知道应用程序上下文，因为它们可以通过bean引用接受协作bean。
  * <p>There is no requirement to subclass this class: It just makes things
  * a little easier if you need access to the context, e.g. for access to
  * file resources or to the message source. Note that many application
  * objects do not need to be aware of the application context at all,
  * as they can receive collaborating beans via bean references.
- *
+ * 许多框架类都是从这个类派生的，特别是web中。
  * <p>Many framework classes are derived from this class, particularly
  * within the web support.
  *
@@ -88,6 +93,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	}
 
 	/**
+	 * 判断是否应用对象需要在应用程序上下文运行。默认为false，可以重载强制要求在ApplicationContext中运行。
 	 * Determine whether this application object needs to run in an ApplicationContext.
 	 * <p>Default is "false". Can be overridden to enforce running in a context
 	 * (i.e. to throw IllegalStateException on accessors if outside a context).
@@ -99,6 +105,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	}
 
 	/**
+	 * 确定传递给{@code setApplicationContext}的任何上下文必须是其实例的上下文类。可以在子类中覆盖重写。
 	 * Determine the context class that any context passed to
 	 * {@code setApplicationContext} must be an instance of.
 	 * Can be overridden in subclasses.
@@ -109,6 +116,8 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	}
 
 	/**
+	 * 子类可以重写该方法用于自定义初始化行为。
+	 * 注意：不会在上下文重写初始化时被调用，而是在此对象的上下文引用的第一次初始化时被调用，默认调用重载的方法。
 	 * Subclasses can override this for custom initialization behavior.
 	 * Gets called by {@code setApplicationContext} after setting the context instance.
 	 * <p>Note: Does <i>not</i> get called on re-initialization of the context
@@ -125,6 +134,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	}
 
 	/**
+	 * 子类重载该方法用于初始化。
 	 * Subclasses can override this for custom initialization behavior.
 	 * <p>The default implementation is empty. Called by
 	 * {@link #initApplicationContext(org.springframework.context.ApplicationContext)}.

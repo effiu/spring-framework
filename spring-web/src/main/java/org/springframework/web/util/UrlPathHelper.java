@@ -192,6 +192,8 @@ public class UrlPathHelper {
 	}
 
 	/**
+	 * {@link #getLookupPathForRequest(HttpServletRequest)}的变体，
+	 * 它自动检查先前计算的查找路径保存为请求属性。该属性仅用于查找目的。
 	 * Variant of {@link #getLookupPathForRequest(HttpServletRequest)} that
 	 * automates checking for a previously computed lookupPath saved as a
 	 * request attribute. The attribute is only used for lookup purposes.
@@ -208,10 +210,13 @@ public class UrlPathHelper {
 				return result;
 			}
 		}
+		// 返回给定请求的映射查找路径
 		return getLookupPathForRequest(request);
 	}
 
 	/**
+	 * 返回给定请求的servlet映射中的路径，即请求的URL中调用servlet部分之外的部分，
+	 * 若整个URL已用于标识servlet，则返回""。
 	 * Return the path within the servlet mapping for the given request,
 	 * i.e. the part of the request's URL beyond the part that called the servlet,
 	 * or "" if the whole URL has been used to identify the servlet.
@@ -226,12 +231,15 @@ public class UrlPathHelper {
 	 * @see #getLookupPathForRequest
 	 */
 	public String getPathWithinServletMapping(HttpServletRequest request) {
+		// 返回给定请求在web应用程序中的路径。
 		String pathWithinApp = getPathWithinApplication(request);
 		String servletPath = getServletPath(request);
+		// 清理给定的路径中的"//"为"/"
 		String sanitizedPathWithinApp = getSanitizedPath(pathWithinApp);
 		String path;
 
 		// If the app container sanitized the servletPath, check against the sanitized version
+		// servletPath包含替换"//"为"/"后的路径，则说明
 		if (servletPath.contains(sanitizedPathWithinApp)) {
 			path = getRemainingPath(sanitizedPathWithinApp, servletPath, false);
 		}
@@ -334,6 +342,7 @@ public class UrlPathHelper {
 	}
 
 	/**
+	 * 清理给定的路径。讲"//"替换为"/"
 	 * Sanitize the given path. Uses the following rules:
 	 * <ul>
 	 * <li>replace all "//" by "/"</li>

@@ -51,10 +51,14 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
+ * {@link org.springframework.web.servlet.HandlerMapping}的抽象基类。
+ * 支持排序、默认handler，handler拦截器，包括由路由模式映射的handler拦截器。
  * Abstract base class for {@link org.springframework.web.servlet.HandlerMapping}
  * implementations. Supports ordering, a default handler, handler interceptors,
  * including handler interceptors mapped by path patterns.
  *
+ * 注意：这个基类不支持公开{@link #PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE}。
+ * 对该属性的支持取决于具体的子类，通常基于请求URL映射。
  * <p>Note: This base class does <i>not</i> support exposure of the
  * {@link #PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE}. Support for this attribute
  * is up to concrete subclasses, typically based on request URL mappings.
@@ -76,26 +80,45 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Nullable
 	private Object defaultHandler;
 
+	/**
+	 * URL路径匹配的Helper类。
+	 */
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
+	/**
+	 * 路径匹配的策略接口
+	 */
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
+	/**
+	 * handlerInterceptors
+	 */
 	private final List<Object> interceptors = new ArrayList<>();
 
+	/**
+	 *
+	 */
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<>();
 
+	/**
+	 * 跨域配置
+	 */
 	@Nullable
 	private CorsConfigurationSource corsConfigurationSource;
 
+	/**
+	 * 跨域处理，默认为W3c的{@code DefaultCorsProcessor}
+	 */
 	private CorsProcessor corsProcessor = new DefaultCorsProcessor();
 
-	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered
+	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	@Nullable
 	private String beanName;
 
 
 	/**
+	 * 为该处理程序设置默认的处理程序，若未找到特定的映射时则返回该handler。
 	 * Set the default handler for this handler mapping.
 	 * This handler will be returned if no specific mapping was found.
 	 * <p>Default is {@code null}, indicating no default handler.
@@ -189,6 +212,9 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	}
 
 	/**
+	 * 设置拦截器以应用该handlerMapping映射的所有handler。
+	 * 支持拦截器类型是HandlerInterceptor、WebRequestInterceptor、MappedInterceptor。
+	 * MappedInterceptor仅仅应用到与其path pattern匹配的请求URL，其bean仅在初始化期间被检测。
 	 * Set the interceptors to apply for all handlers mapped by this handler mapping.
 	 * <p>Supported interceptor types are HandlerInterceptor, WebRequestInterceptor, and MappedInterceptor.
 	 * Mapped interceptors apply only to request URLs that match its path patterns.

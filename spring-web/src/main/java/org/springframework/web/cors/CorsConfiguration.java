@@ -289,6 +289,7 @@ public class CorsConfiguration {
 	}
 
 	/**
+	 * 是否支持用户凭据。
 	 * Whether user credentials are supported.
 	 * <p>By default this is not set (i.e. user credentials are not supported).
 	 */
