@@ -204,6 +204,7 @@ public class UrlPathHelper {
 	 * @see org.springframework.web.servlet.HandlerMapping#LOOKUP_PATH
 	 */
 	public String getLookupPathForRequest(HttpServletRequest request, @Nullable String lookupPathAttributeName) {
+		// 若该request已经
 		if (lookupPathAttributeName != null) {
 			String result = (String) request.getAttribute(lookupPathAttributeName);
 			if (result != null) {

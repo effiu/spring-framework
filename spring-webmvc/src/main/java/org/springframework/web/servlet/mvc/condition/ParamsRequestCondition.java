@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.WebUtils;
 
 /**
+ * 一个逻辑连词('&&')请求条件，它通过{@link RequestMapping#params()}中定义的语法将请求与一组参数表达式相匹配。
  * A logical conjunction (' && ') request condition that matches a request against
  * a set parameter expressions with syntax defined in {@link RequestMapping#params()}.
  *

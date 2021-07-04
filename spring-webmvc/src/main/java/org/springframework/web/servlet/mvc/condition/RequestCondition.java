@@ -21,8 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 
 /**
+ * 请求映射条件的合同。
  * Contract for request mapping conditions.
  *
+ * 请求条件可以通过{@link #combine(Object)}组合，通过
+ * {@link #getMatchingCondition(HttpServletRequest)}匹配请求，
+ * 通过{@link #compareTo(Object, HttpServletRequest)}相互比较确定，这是对给定请求的更接近的匹配。
  * <p>Request conditions can be combined via {@link #combine(Object)}, matched to
  * a request via {@link #getMatchingCondition(HttpServletRequest)}, and compared
  * to each other via {@link #compareTo(Object, HttpServletRequest)} to determine
@@ -37,6 +41,7 @@ import org.springframework.lang.Nullable;
 public interface RequestCondition<T> {
 
 	/**
+	 * 将该条件与其他条件组合，例如来自类型级别和方法级别{@code @RequestMapping}的注解。
 	 * Combine this condition with another such as conditions from a
 	 * type-level and method-level {@code @RequestMapping} annotation.
 	 * @param other the condition to combine with.
@@ -46,6 +51,10 @@ public interface RequestCondition<T> {
 	T combine(T other);
 
 	/**
+	 * 检查条件是否与返回为请求创建的潜在新实例的请求匹配。例如，具有多个URL模式的条件可能仅仅
+	 * 返回具有与请求匹配的那些模式的新实例。
+	 * 对于CORS预检请求，条件应该与实际请求匹配(URL路径，查询参数和Access-Control-Request-Method标头中的方法)。
+	 * 若一个条件无法与预检请求匹配，则返回一个空内容实例，从而不会导致匹配失败。
 	 * Check if the condition matches the request returning a potentially new
 	 * instance created for the current request. For example a condition with
 	 * multiple URL patterns may return a new instance only with those patterns
@@ -61,6 +70,8 @@ public interface RequestCondition<T> {
 	T getMatchingCondition(HttpServletRequest request);
 
 	/**
+	 * 将该条件与特定请求上下文中的另一个条件比较。该方法假设两个实例都是通过
+	 * {@link #getMatchingCondition(HttpServletRequest)}获得，以确保它们仅仅包含与当前请求相关的内容。
 	 * Compare this condition to another condition in the context of
 	 * a specific request. This method assumes both instances have
 	 * been obtained via {@link #getMatchingCondition(HttpServletRequest)}

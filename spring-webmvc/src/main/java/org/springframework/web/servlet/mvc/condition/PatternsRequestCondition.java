@@ -36,6 +36,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
+ * 一个逻辑分离('||')请求条件，它根据一组URL路径模式匹配请求。
  * A logical disjunction (' || ') request condition that matches a request
  * against a set of URL path patterns.
  *
@@ -50,14 +51,21 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 
 	private final PathMatcher pathMatcher;
 
+	/**
+	 * 使用后缀模式匹配
+	 */
 	private final boolean useSuffixPatternMatch;
 
+	/**
+	 * 使用尾随斜线匹配
+	 */
 	private final boolean useTrailingSlashMatch;
 
 	private final List<String> fileExtensions = new ArrayList<>();
 
 
 	/**
+	 * 使用给定的URL创建一个新实例，每个不以"/"开头的url都以"/"开头。
 	 * Creates a new instance with the given URL patterns. Each pattern that is
 	 * not empty and does not start with "/" is prepended with "/".
 	 * @param patterns 0 or more URL patterns; if 0 the condition will match to
@@ -68,6 +76,7 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 	}
 
 	/**
+	 * 具有附加的可选构造函数{@link UrlPathHelper}、{@link PathMatcher}以及是否自动匹配尾部斜杠。
 	 * Alternative constructor with additional, optional {@link UrlPathHelper},
 	 * {@link PathMatcher}, and whether to automatically match trailing slashes.
 	 * @param patterns the URL patterns to use; if 0, the condition will match to every request.
@@ -145,6 +154,7 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 	}
 
 	/**
+	 * 组合和匹配时使用的私有构造函数。
 	 * Private constructor for use when combining and matching.
 	 */
 	private PatternsRequestCondition(Set<String> patterns, PatternsRequestCondition other) {
@@ -186,6 +196,10 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 	}
 
 	/**
+	 * 从当前实例("this")和"other"实例返回一个带有URL的新实例，具体如下所示：
+	 * 	若两个实例中都有pattern，则使用{@link PathMatcher#combine(String, String)}将两个pattern组合起来。
+	 * 	若只有一个实例有pattern，则直接使用
+	 * 	若没有实例有pattern，则使用""。
 	 * Returns a new instance with URL patterns from the current instance ("this") and
 	 * the "other" instance as follows:
 	 * <ul>
@@ -218,6 +232,12 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 	}
 
 	/**
+	 * 检查是否有任何pattern与给定请求匹配，并保证返回一个匹配模式的实例。
+	 * 通过按照以下顺序进行检查获得匹配的pattern：
+	 * 	1. 直接匹配
+	 * 	2. 若pattern不包含"."则pattren匹配会附加".*"
+	 * 	3. pattern匹配
+	 * 	4. 若pattern没有以"/"结尾，则模式匹配会附加"/"。
 	 * Checks if any of the patterns match the given request and returns an instance
 	 * that is guaranteed to contain matching patterns, sorted via
 	 * {@link PathMatcher#getPatternComparator(String)}.

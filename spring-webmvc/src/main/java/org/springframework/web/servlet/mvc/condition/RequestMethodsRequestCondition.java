@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.cors.CorsUtils;
 
 /**
+ * 一个逻辑分离('||')请求条件，它根据一组{@link RequestMethod RequestMethods}匹配请求。
  * A logical disjunction (' || ') request condition that matches a request
  * against a set of {@link RequestMethod RequestMethods}.
  *
@@ -43,7 +44,10 @@ import org.springframework.web.cors.CorsUtils;
  */
 public final class RequestMethodsRequestCondition extends AbstractRequestCondition<RequestMethodsRequestCondition> {
 
-	/** Per HTTP method cache to return ready instances from getMatchingCondition. */
+	/**
+	 * 每个HTTP方法缓存从getMatchingCondition方法准备好的实例。
+	 * Per HTTP method cache to return ready instances from getMatchingCondition.
+	 */
 	private static final Map<String, RequestMethodsRequestCondition> requestMethodConditionCache;
 
 	static {
@@ -58,6 +62,7 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 
 
 	/**
+	 * 使用给定的请求方法创建一个新的实例。
 	 * Create a new instance with the given request methods.
 	 * @param requestMethods 0 or more HTTP request methods;
 	 * if, 0 the condition will match to every request
@@ -89,6 +94,7 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 	}
 
 	/**
+	 * 返回一个新实例，其中包含来自"this"和"other"实例的HTTP请求方法的联合。
 	 * Returns a new instance with a union of the HTTP request methods
 	 * from "this" and the "other" instance.
 	 */
@@ -100,6 +106,7 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 	}
 
 	/**
+	 * 检查是否有任何http请求方法与给定请求匹配并返回仅包含匹配HTTP请求方法的实例。
 	 * Check if any of the HTTP request methods match the given request and
 	 * return an instance that contains the matching HTTP request method only.
 	 * @param request the current request
@@ -111,6 +118,7 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 	@Override
 	@Nullable
 	public RequestMethodsRequestCondition getMatchingCondition(HttpServletRequest request) {
+		// CORS的预检请求
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return matchPreFlight(request);
 		}
@@ -149,6 +157,7 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 			if (getMethods().contains(requestMethod)) {
 				return requestMethodConditionCache.get(httpMethodValue);
 			}
+			// TODO 这是什么意思
 			if (requestMethod.equals(RequestMethod.HEAD) && getMethods().contains(RequestMethod.GET)) {
 				return requestMethodConditionCache.get(HttpMethod.GET.name());
 			}

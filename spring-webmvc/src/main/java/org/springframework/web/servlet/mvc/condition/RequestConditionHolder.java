@@ -24,6 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 
 /**
+ * 当请求条件的类型事先未知时，{@link RequestCondition} 的持有者很有用，
+ * 例如自定义条件。 由于这个类也是{@code RequestCondition}的一个实现，它有效地修饰了持有的请求条件，
+ * 并允许它以类型和空安全的方式与其他请求条件进行组合和比较。
  * A holder for a {@link RequestCondition} useful when the type of the request
  * condition is not known ahead of time, e.g. custom condition. Since this
  * class is also an implementation of {@code RequestCondition}, effectively it

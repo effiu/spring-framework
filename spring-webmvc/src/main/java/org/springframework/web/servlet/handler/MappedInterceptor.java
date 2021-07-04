@@ -27,10 +27,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * 包含并委托对{@link HandlerInterceptor}的调用，以及拦截器应应用的包含(和可选地排除)path模式。
+ * 还提供匹配逻辑去检查拦截器是否适用于给定的请求逻辑。
  * Contains and delegates calls to a {@link HandlerInterceptor} along with
  * include (and optionally exclude) path patterns to which the interceptor should apply.
  * Also provides matching logic to test if the interceptor applies to a given request path.
  *
+ * 可以直接使用任何{@link org.springframework.web.servlet.handler.AbstractHandlerMethodMapping}
+ * 注册MappedInterceptor。此外，{@code AbstractHandlerMethodMapping}(包含祖先上下文)
+ * 会自动检测{@code MappedInterceptor}类型的bean，这意味着拦截器已经全局注册到所有handlerMapping。
  * <p>A MappedInterceptor can be registered directly with any
  * {@link org.springframework.web.servlet.handler.AbstractHandlerMethodMapping}.
  * Furthermore, beans of type {@code MappedInterceptor} are automatically detected by
@@ -103,6 +108,9 @@ public final class MappedInterceptor implements HandlerInterceptor {
 
 
 	/**
+	 * 配置PathMatcher与MappedInterceptor一起使用，而不是默认传递给
+	 * {@link #matches(String, org.springframework.util.PathMatcher)}方法的那个。
+	 * 这个一个高级属性，只有在使用支持映射元数据而不是Ant风格路径匹配模式的自定义PathMatcher实现时才需要。
 	 * Configure a PathMatcher to use with this MappedInterceptor instead of the one passed
 	 * by default to the {@link #matches(String, org.springframework.util.PathMatcher)} method.
 	 * <p>This is an advanced property that is only required when using custom PathMatcher
@@ -144,6 +152,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * @return {@code true} if the interceptor applies to the given request path
 	 */
 	public boolean matches(String lookupPath, PathMatcher pathMatcher) {
+		// 当配置了pathMatcher时，该方法传递进来的pathMatcher将不会被使用。
 		PathMatcher pathMatcherToUse = (this.pathMatcher != null ? this.pathMatcher : pathMatcher);
 		if (!ObjectUtils.isEmpty(this.excludePatterns)) {
 			for (String pattern : this.excludePatterns) {
@@ -152,9 +161,11 @@ public final class MappedInterceptor implements HandlerInterceptor {
 				}
 			}
 		}
+		// 当includePatterns为空时，不属于excludePatterns则返回true
 		if (ObjectUtils.isEmpty(this.includePatterns)) {
 			return true;
 		}
+		// includePatterns非空时，匹配includePatterns才会返回true
 		for (String pattern : this.includePatterns) {
 			if (pathMatcherToUse.match(pattern, lookupPath)) {
 				return true;
